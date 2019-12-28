@@ -2,13 +2,20 @@
 Affine transformation
 """
 
+from typing import Tuple, Union, Optional
+
 import numpy as np
 from .dimensionalize import dimensionalize
 from .augmentor import _Augmentor
 
 
 @dimensionalize
-def affine(X, Y=None, a=1.0, b=0.0):
+def affine(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    a: Optional[Union[float, np.ndarray]] = 1.0,
+    b: Optional[Union[float, np.ndarray]] = 0.0,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Perform affine transformation to time series.
 
     A series x will be transformed to a*x+b, while binary label y will not be
@@ -44,6 +51,9 @@ def affine(X, Y=None, a=1.0, b=0.0):
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
+    N: int
+    n: int
+    c: int
     N, n, c = X.shape
 
     if isinstance(a, float) | isinstance(a, int):
@@ -64,10 +74,10 @@ def affine(X, Y=None, a=1.0, b=0.0):
     if b.shape != (N, c):
         raise ValueError("Wrong shape of b")
 
-    X_aug = X * a.reshape((N, 1, c)) + b.reshape((N, 1, c))
+    X_aug: np.ndarray = X * a.reshape((N, 1, c)) + b.reshape((N, 1, c))
 
     if Y is None:
-        Y_aug = None
+        Y_aug: Optional[np.ndarray] = None
     else:
         Y_aug = Y.copy()
 
@@ -76,14 +86,14 @@ def affine(X, Y=None, a=1.0, b=0.0):
 
 @dimensionalize
 def random_affine(
-    X,
-    Y=None,
-    max_a=10.0,
-    min_a=-10.0,
-    max_b=100.0,
-    min_b=-100.0,
-    random_seed=None,
-):
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    max_a: Optional[float] = 10.0,
+    min_a: Optional[float] = -10.0,
+    max_b: Optional[float] = 100.0,
+    min_b: Optional[float] = -100.0,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Perform affine transformation to time series with random coefficients.
 
     A series x will be transformed to a*x+b, while binary label y will not be
@@ -130,10 +140,13 @@ def random_affine(
 
     """
 
+    N: int
+    n: int
+    c: int
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)
-    a = rand.uniform(low=min_a, high=max_a, size=(N, c))
-    b = rand.uniform(low=min_b, high=max_b, size=(N, c))
+    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    a: np.ndarray = rand.uniform(low=min_a, high=max_a, size=(N, c))
+    b: np.ndarray = rand.uniform(low=min_b, high=max_b, size=(N, c))
 
     return affine(X, Y, a=a, b=b)
 
@@ -158,23 +171,27 @@ class Affine(_Augmentor):
 
     """
 
-    def __init__(self, a=1.0, b=0.0):
+    def __init__(
+        self,
+        a: Optional[Union[float, np.ndarray]] = 1.0,
+        b: Optional[Union[float, np.ndarray]] = 0.0,
+    ) -> None:
         super().__init__(augmentor_func=affine, is_random=False, a=a, b=b)
 
     @property
-    def a(self):
+    def a(self) -> Union[float, np.ndarray]:
         return self._params["a"]
 
     @a.setter
-    def a(self, a):
+    def a(self, a: Union[float, np.ndarray]) -> None:
         self._params["a"] = a
 
     @property
-    def b(self):
+    def b(self) -> Union[float, np.ndarray]:
         return self._params["b"]
 
     @b.setter
-    def b(self, b):
+    def b(self, b: Union[float, np.ndarray]) -> None:
         self._params["b"] = b
 
 
@@ -212,12 +229,12 @@ class RandomAffine(_Augmentor):
 
     def __init__(
         self,
-        max_a=10.0,
-        min_a=-10.0,
-        max_b=100.0,
-        min_b=-100.0,
-        random_seed=None,
-    ):
+        max_a: Optional[float] = 10.0,
+        min_a: Optional[float] = -10.0,
+        max_b: Optional[float] = 100.0,
+        min_b: Optional[float] = -100.0,
+        random_seed: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=random_affine,
             is_random=True,
@@ -229,41 +246,41 @@ class RandomAffine(_Augmentor):
         )
 
     @property
-    def max_a(self):
+    def max_a(self) -> float:
         return self._params["max_a"]
 
     @max_a.setter
-    def max_a(self, max_a):
+    def max_a(self, max_a: float) -> None:
         self._params["max_a"] = max_a
 
     @property
-    def min_a(self):
+    def min_a(self) -> float:
         return self._params["min_a"]
 
     @min_a.setter
-    def min_a(self, min_a):
+    def min_a(self, min_a: float) -> None:
         self._params["min_a"] = min_a
 
     @property
-    def max_b(self):
+    def max_b(self) -> float:
         return self._params["max_b"]
 
     @max_b.setter
-    def max_b(self, max_b):
+    def max_b(self, max_b: float) -> None:
         self._params["max_b"] = max_b
 
     @property
-    def min_b(self):
+    def min_b(self) -> float:
         return self._params["min_b"]
 
     @min_b.setter
-    def min_b(self, min_b):
+    def min_b(self, min_b: float) -> None:
         self._params["min_b"] = min_b
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> int:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: int) -> None:
         self._params["random_seed"] = random_seed
