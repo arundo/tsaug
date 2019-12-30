@@ -1,15 +1,24 @@
+from typing import List, Tuple, Union, Optional, Callable, Any
+
 import numpy as np
 
 
 class _Augmentor:
-    def __init__(self, augmentor_func=None, is_random=None, **kwargs):
+    def __init__(
+        self,
+        augmentor_func: Optional[Callable[[Any], np.ndarray]] = None,
+        is_random: Optional[bool] = None,
+        **kwargs: Any
+    ) -> None:
         self._augmentor_func = augmentor_func
         self._is_random = is_random
-        self._M = 1
-        self._prob = 1.0
-        self._params = kwargs
+        self._M: int = 1
+        self._prob: float = 1.0
+        self._params: Any = kwargs
 
-    def run(self, X, Y=None):
+    def run(
+        self, X: np.ndarray, Y: Optional[np.ndarray] = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Perform augmentation to time series.
 
         Parameters
@@ -35,18 +44,18 @@ class _Augmentor:
         """
         if self._prob < 1:
             if X.ndim == 1:
-                r = np.random.uniform(size=self._M)
+                r: np.ndarray = np.random.uniform(size=self._M)
             else:
                 r = np.random.uniform(size=X.shape[0] * self._M)
         if Y is None:
             if self._M == 1:
-                X_aug = X.copy()
+                X_aug: np.ndarray = X.copy()
             else:
                 X_aug = np.vstack([X.copy()] * self._M)
             if self._prob == 1:
-                X_aug = self._augmentor_func(X_aug, **self._params)
+                X_aug = self._augmentor_func(X_aug, **self._params)  # type: ignore
             elif (r <= self._prob).any():
-                X_aug[r <= self._prob, :] = self._augmentor_func(
+                X_aug[r <= self._prob, :] = self._augmentor_func(  # type: ignore
                     X_aug[r <= self._prob, :], **self._params
                 )
             # if (X.ndim == 1) and (self._M == 1):
@@ -55,18 +64,19 @@ class _Augmentor:
         else:
             if self._M == 1:
                 X_aug = X.copy()
-                Y_aug = Y.copy()
+                Y_aug: np.ndarray = Y.copy()
             else:
                 X_aug = np.vstack([X.copy()] * self._M)
                 Y_aug = np.vstack([Y.copy()] * self._M)
             if self._prob == 1:
-                X_aug, Y_aug = self._augmentor_func(
+                X_aug, Y_aug = self._augmentor_func(  # type: ignore
                     X_aug, Y_aug, **self._params
                 )
             elif (r <= self._prob).any():
-                X_aug[r <= self._prob, :], Y_aug[
-                    r <= self._prob, :
-                ] = self._augmentor_func(
+                (
+                    X_aug[r <= self._prob, :],
+                    Y_aug[r <= self._prob, :],
+                ) = self._augmentor_func(  # type: ignore
                     X_aug[r <= self._prob, :],
                     Y_aug[r <= self._prob, :],
                     **self._params
@@ -77,31 +87,31 @@ class _Augmentor:
             return X_aug, Y_aug
 
     @property
-    def prob(self):
+    def prob(self) -> float:
         return self._prob
 
     @prob.setter
-    def prob(self, prob):
+    def prob(self, prob: float) -> None:
         if (prob < 0) or (prob > 1):
             raise ValueError("Probability must be between 0 and 1")
         self._prob = prob
 
     @property
-    def M(self):
+    def M(self) -> int:
         return self._M
 
     @M.setter
-    def M(self, M):
+    def M(self, M: int) -> None:
         self._M = M
 
-    def copy(self):
+    def copy(self) -> Any:
         """Create a copy of this augmentor."""
         my_copy = self.__class__(**self._params)
         my_copy.M = self.M
         my_copy.prob = self.prob
         return my_copy
 
-    def __add__(self, another_augmentor):
+    def __add__(self, another_augmentor: Any) -> Any:
         if isinstance(another_augmentor, _AugmentorPipeline):
             return _AugmentorPipeline(
                 [self] + another_augmentor._augmentor_list
@@ -114,30 +124,36 @@ class _Augmentor:
                 "augmentor pipeline."
             )
 
-    def __mul__(self, M):
+    def __mul__(self, M: int) -> Any:
         augmentor_copy = self.copy()
         augmentor_copy.M = augmentor_copy.M * M
         return augmentor_copy
 
-    def __matmul__(self, prob):
+    def __matmul__(self, prob: float) -> Any:
         augmentor_copy = self.copy()
         augmentor_copy.prob = augmentor_copy.prob * prob
         return augmentor_copy
 
-    def __len__(self):
+    def __len__(self) -> int:
         return 1
 
-    def summary(self):
+    def summary(self) -> None:
         """Print summary of this augmentor."""
         self._summary()
 
     def _summary(
         self,
-        header=True,
-        input_N=(1, None),
-        input_n=(1, None),
-        input_c=(1, None),
-    ):
+        header: bool = True,
+        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+    ) -> Optional[
+        Tuple[
+            Tuple[Optional[int], Optional[int]],
+            Tuple[Optional[int], Optional[int]],
+            Tuple[Optional[int], Optional[int]],
+        ]
+    ]:
         if header:
             print("Augmentor \t M \t Prob \t Output Size \t Params")
             print("=" * 100)
@@ -169,8 +185,15 @@ class _Augmentor:
         )
 
     def _get_output_dim(
-        self, input_N=(1, None), input_n=(1, None), input_c=(1, None)
-    ):
+        self,
+        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+    ) -> Tuple[
+        Tuple[Optional[int], Optional[int]],
+        Tuple[Optional[int], Optional[int]],
+        Tuple[Optional[int], Optional[int]],
+    ]:
         """
         Get output dimensions from input dimensions
 
@@ -183,7 +206,7 @@ class _Augmentor:
             applicable.
 
         """
-        output_N = (
+        output_N: Tuple[Optional[int], Optional[int]] = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
             else (None, input_N[1] * self.M)
@@ -192,12 +215,14 @@ class _Augmentor:
 
 
 class _AugmentorPipeline:
-    def __init__(self, augmentor_list):
+    def __init__(self, augmentor_list: List) -> None:
         self._augmentor_list = [
             augmentor.copy() for augmentor in augmentor_list
         ]
 
-    def run(self, X, Y=None):
+    def run(
+        self, X: np.ndarray, Y: Optional[np.ndarray] = None
+    ) -> Union[Tuple[np.ndarray, np.ndarray], np.ndarray]:
         """Perform augmentation to time series.
 
         Args:
@@ -226,10 +251,10 @@ class _AugmentorPipeline:
                 X_aug, Y_aug = augmentor.run(X_aug, Y_aug)
             return X_aug, Y_aug
 
-    def copy(self):
+    def copy(self) -> Any:
         return _AugmentorPipeline(self._augmentor_list)
 
-    def __add__(self, another_augmentor):
+    def __add__(self, another_augmentor: Any) -> Any:
         if isinstance(another_augmentor, _AugmentorPipeline):
             return _AugmentorPipeline(
                 self._augmentor_list + another_augmentor._augmentor_list
@@ -244,7 +269,7 @@ class _AugmentorPipeline:
                 "pipeline or an augmentor."
             )
 
-    def __mul__(self, M):
+    def __mul__(self, M: int) -> Any:
         # when operator * is applied to a augmentor pipeline, change the M of
         # the first random augmentor. If no random augmentor exist in the
         # pipeline, then change the M of the last augmentor.
@@ -262,15 +287,15 @@ class _AugmentorPipeline:
             ]
         )
 
-    # def __matmul__(self, prob):
+    # def __matmul__(self, prob: float) -> Any:
     #     return _AugmentorPipeline(
     #         [augmentor @ prob for augmentor in self._augmentor_list]
     #     )
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._augmentor_list)
 
-    def summary(self):
+    def summary(self) -> None:
         """Print summary of this augmentor pipeline."""
         input_N = (1, None)
         input_n = (1, None)
@@ -283,7 +308,7 @@ class _AugmentorPipeline:
                 input_c=input_c,
             )
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: Union[int, slice]) -> Any:
         if isinstance(index, int):
             return self._augmentor_list[index]
         elif isinstance(index, slice):
@@ -291,7 +316,7 @@ class _AugmentorPipeline:
         else:
             raise TypeError("Index must be an integer or a slice.")
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: Union[int, slice], value: Any) -> None:
         if isinstance(index, int):
             if not isinstance(value, _Augmentor):
                 raise TypeError(
