@@ -6,7 +6,7 @@ import numpy as np
 class _Augmentor:
     def __init__(
         self,
-        augmentor_func: Optional[Callable[[Any], np.ndarray]] = None,
+        augmentor_func: Optional[Callable[..., np.ndarray]] = None,
         is_random: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
@@ -42,6 +42,10 @@ class _Augmentor:
             exists).
 
         """
+        if not callable(self._augmentor_func):
+            raise RuntimeError(
+                "Augmentation function is not defined correctly."
+            )
         if self._prob < 1:
             if X.ndim == 1:
                 r: np.ndarray = np.random.uniform(size=self._M)
@@ -53,9 +57,9 @@ class _Augmentor:
             else:
                 X_aug = np.vstack([X.copy()] * self._M)
             if self._prob == 1:
-                X_aug = self._augmentor_func(X_aug, **self._params)  # type: ignore
+                X_aug = self._augmentor_func(X_aug, **self._params)
             elif (r <= self._prob).any():
-                X_aug[r <= self._prob, :] = self._augmentor_func(  # type: ignore
+                X_aug[r <= self._prob, :] = self._augmentor_func(
                     X_aug[r <= self._prob, :], **self._params
                 )
             # if (X.ndim == 1) and (self._M == 1):
@@ -69,14 +73,14 @@ class _Augmentor:
                 X_aug = np.vstack([X.copy()] * self._M)
                 Y_aug = np.vstack([Y.copy()] * self._M)
             if self._prob == 1:
-                X_aug, Y_aug = self._augmentor_func(  # type: ignore
+                X_aug, Y_aug = self._augmentor_func(
                     X_aug, Y_aug, **self._params
                 )
             elif (r <= self._prob).any():
                 (
                     X_aug[r <= self._prob, :],
                     Y_aug[r <= self._prob, :],
-                ) = self._augmentor_func(  # type: ignore
+                ) = self._augmentor_func(
                     X_aug[r <= self._prob, :],
                     Y_aug[r <= self._prob, :],
                     **self._params
@@ -209,7 +213,7 @@ class _Augmentor:
         output_N: Tuple[Optional[int], Optional[int]] = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M)
+            else (None, input_N[1] * self.M)  # type: ignore
         )
         return output_N, input_n, input_c
 
