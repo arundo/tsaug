@@ -1,6 +1,7 @@
 """
 Cross sum
 """
+from typing import List, Tuple, Union, Optional, Callable, Any
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -8,7 +9,9 @@ from .augmentor import _Augmentor
 
 
 @dimensionalize
-def cross_sum(X, Y=None, inds=None):
+def cross_sum(
+    X: np.ndarray, Y: Optional[np.ndarray] = None, inds: Optional[np.ndarray] = None
+) -> Tuple[np.ndarray, np.ndarray]:
     """Sum cross given time series.
 
     Time series will be summed with others based on the given indices. Time
@@ -42,7 +45,9 @@ def cross_sum(X, Y=None, inds=None):
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
-
+    N: int
+    n: int
+    c: int
     N, n, c = X.shape
 
     if inds is None:
@@ -54,9 +59,9 @@ def cross_sum(X, Y=None, inds=None):
     if inds.shape[0] != N:
         raise ValueError("Wrong shape of inds")
 
-    m = inds.shape[1]
+    m: int = inds.shape[1]
 
-    X_aug = X.copy()
+    X_aug: np.ndarray = X.copy()
     if Y is None:
         Y_aug = None
     else:
@@ -64,23 +69,27 @@ def cross_sum(X, Y=None, inds=None):
 
     for k in range(m):
         X_aug[np.isnan(inds[:, k]) >= 0] = (
-            X_aug[np.isnan(inds[:, k]) >= 0]
-            + X[inds[np.isnan(inds[:, k]) >= 0, k]]
+            X_aug[np.isnan(inds[:, k]) >= 0] + X[inds[np.isnan(inds[:, k]) >= 0, k]]
         )
         if Y is not None:
-            Y_aug[np.isnan(inds[:, k]) >= 0] = (
-                Y_aug[np.isnan(inds[:, k]) >= 0]
+            Y_aug[np.isnan(inds[:, k]) >= 0] = (  #  type: ignore
+                Y_aug[np.isnan(inds[:, k]) >= 0]  #  type: ignore
                 + Y[inds[np.isnan(inds[:, k]) >= 0, k]]
             )
 
     if Y is not None:
-        Y_aug = (Y_aug >= 1).astype(int)
+        Y_aug = (Y_aug >= 1).astype(int)  #  type: ignore
 
     return X_aug, Y_aug
 
 
 @dimensionalize
-def random_cross_sum(X, Y=None, max_sum_series=5, random_seed=None):
+def random_cross_sum(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    max_sum_series: Optional[int] = 5,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Sum cross given time series randomly.
 
     Time series will be summed with others randomly. Time points at which at
@@ -101,7 +110,7 @@ def random_cross_sum(X, Y=None, max_sum_series=5, random_seed=None):
         series, and cl is the number of classes (i.e. types of anomaly).
         Default: None.
 
-    max_sum_series : int, optinonal
+    max_sum_series : int, optional
         Maximal number of time series to cross sum. Default: 5.
 
     random_seed : int, optional
@@ -115,6 +124,9 @@ def random_cross_sum(X, Y=None, max_sum_series=5, random_seed=None):
 
     """
 
+    N: int
+    n: int
+    c: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)
     inds = rand.choice(range(-1, N), size=(N, max_sum_series))
@@ -140,15 +152,15 @@ class CrossSum(_Augmentor):
 
     """
 
-    def __init__(self, inds=None):
+    def __init__(self, inds: np.ndarray = None) -> None:
         super().__init__(augmentor_func=cross_sum, is_random=False, inds=inds)
 
     @property
-    def inds(self):
+    def inds(self) -> np.ndarray:
         return self._params["inds"]
 
     @inds.setter
-    def inds(self, inds):
+    def inds(self, inds: Optional[np.ndarray]) -> None:
         self._params["inds"] = inds
 
 
@@ -161,7 +173,7 @@ class RandomCrossSum(_Augmentor):
 
     Parameters
     ----------
-    max_sum_series : int, optinonal
+    max_sum_series : int, optional
         Maximal number of time series to cross sum. Default: 5.
 
     random_seed : int, optional
@@ -170,7 +182,9 @@ class RandomCrossSum(_Augmentor):
 
     """
 
-    def __init__(self, max_sum_series=5, random_seed=None):
+    def __init__(
+        self, max_sum_series: Optional[int] = 5, random_seed: Optional[int] = None
+    ) -> None:
         super().__init__(
             augmentor_func=random_cross_sum,
             is_random=True,
@@ -179,17 +193,17 @@ class RandomCrossSum(_Augmentor):
         )
 
     @property
-    def max_sum_series(self):
+    def max_sum_series(self) -> int:
         return self._params["max_sum_series"]
 
     @max_sum_series.setter
-    def max_sum_series(self, max_sum_series):
+    def max_sum_series(self, max_sum_series: Optional[int]) -> None:
         self._params["max_sum_series"] = max_sum_series
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> Optional[int]:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: Optional[int]) -> None:
         self._params["random_seed"] = random_seed
