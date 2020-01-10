@@ -1,13 +1,18 @@
 """
 Reverse module
 """
+from typing import Tuple, Optional
+
+import numpy as np
 
 from .dimensionalize import dimensionalize
 from .augmentor import _Augmentor
 
 
 @dimensionalize
-def reverse(X, Y=None):
+def reverse(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Reverse time series.
 
     Parameters
@@ -31,10 +36,10 @@ def reverse(X, Y=None):
 
     """
 
-    X_aug = X[:, ::-1, :].copy()
+    X_aug: np.ndarray = X[:, ::-1, :].copy()
 
     if Y is None:
-        Y_aug = None
+        Y_aug: Optional[np.ndarray] = None
     else:
         Y_aug = Y[:, ::-1, :].copy()
 
@@ -44,5 +49,5 @@ def reverse(X, Y=None):
 class Reverse(_Augmentor):
     """Augmentor that reverses time series."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(augmentor_func=reverse, is_random=False)

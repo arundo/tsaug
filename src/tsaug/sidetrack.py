@@ -1,6 +1,7 @@
 """
 Value warpping module
 """
+from typing import Tuple, Optional
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -9,16 +10,16 @@ from .augmentor import _Augmentor
 
 @dimensionalize
 def random_sidetrack(
-    X,
-    Y=None,
-    mode="multiplicative",
-    initial_sidetrack=None,
-    max_sidetrack=None,
-    min_sidetrack=None,
-    step_mu=0,
-    step_sigma=0.1,
-    random_seed=None,
-):
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    mode: Optional[str] = "multiplicative",
+    initial_sidetrack: Optional[float] = None,
+    max_sidetrack: Optional[float] = None,
+    min_sidetrack: Optional[float] = None,
+    step_mu: Optional[float] = 0.0,
+    step_sigma: Optional[float] = 0.1,
+    random_seed: Optional[float] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Sidetrack time series from its original values.
 
     This augmentor has two modes: multiplicative mode sidetracks a time series
@@ -56,7 +57,7 @@ def random_sidetrack(
         limit. Default: None.
 
     step_mu : float, optional
-        Mean of step size in random walk. Default: 0.
+        Mean of step size in random walk. Default: 0.0
 
     step_sigma : float, optional
         Standard deviation of step size in random walk. Default: 0.1.
@@ -85,8 +86,12 @@ def random_sidetrack(
             "Argument `initial_sidetrack` is greater than `max_sidetrack`."
         )
 
+    N: int
+    n: int
+    c: int
+    M: np.ndarray
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)
+    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
     M = (
         np.cumsum(
             rand.normal(size=X.shape, loc=step_mu, scale=step_sigma), axis=1
@@ -94,7 +99,9 @@ def random_sidetrack(
         + initial_sidetrack
     )
     if (max_sidetrack is not None) and (min_sidetrack is not None):
-        layer = (M - min_sidetrack) // (max_sidetrack - min_sidetrack)
+        layer: int = int(
+            (M - min_sidetrack) // (max_sidetrack - min_sidetrack)
+        )
         M = M - layer * (max_sidetrack - min_sidetrack)
         M[layer % 2 == 1] = max_sidetrack + min_sidetrack - M[layer % 2 == 1]
     elif (max_sidetrack is not None) and (min_sidetrack is None):
@@ -149,18 +156,21 @@ class RandomSidetrack(_Augmentor):
     step_sigma : float, optional
         Standard deviation of step size in random walk. Default: 0.1.
 
+    random_seed : int, optional
+        Random seed used to initialize the pseudo-random number generator.
+        Default: None.
     """
 
     def __init__(
         self,
-        mode="multiplicative",
-        initial_sidetrack=None,
-        max_sidetrack=None,
-        min_sidetrack=None,
-        step_mu=0,
-        step_sigma=0.1,
-        random_seed=None,
-    ):
+        mode: Optional[str] = "multiplicative",
+        initial_sidetrack: Optional[float] = None,
+        max_sidetrack: Optional[float] = None,
+        min_sidetrack: Optional[float] = None,
+        step_mu: Optional[float] = 0,
+        step_sigma: Optional[float] = 0.1,
+        random_seed: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=random_sidetrack,
             is_random=True,
@@ -174,57 +184,57 @@ class RandomSidetrack(_Augmentor):
         )
 
     @property
-    def mode(self):
+    def mode(self) -> Optional[str]:
         return self._params["mode"]
 
     @mode.setter
-    def mode(self, mode):
+    def mode(self, mode: Optional[str]) -> None:
         self._params["mode"] = mode
 
     @property
-    def max_sidetrack(self):
+    def max_sidetrack(self) -> Optional[float]:
         return self._params["max_sidetrack"]
 
     @max_sidetrack.setter
-    def max_sidetrack(self, max_sidetrack):
+    def max_sidetrack(self, max_sidetrack: Optional[float]) -> None:
         self._params["max_sidetrack"] = max_sidetrack
 
     @property
-    def min_sidetrack(self):
+    def min_sidetrack(self) -> Optional[float]:
         return self._params["min_sidetrack"]
 
     @min_sidetrack.setter
-    def min_sidetrack(self, min_sidetrack):
+    def min_sidetrack(self, min_sidetrack: Optional[float]) -> None:
         self._params["min_sidetrack"] = min_sidetrack
 
     @property
-    def initial_sidetrack(self):
+    def initial_sidetrack(self) -> Optional[float]:
         return self._params["initial_sidetrack"]
 
     @initial_sidetrack.setter
-    def initial_sidetrack(self, initial_sidetrack):
+    def initial_sidetrack(self, initial_sidetrack: Optional[float]) -> None:
         self._params["initial_sidetrack"] = initial_sidetrack
 
     @property
-    def step_mu(self):
+    def step_mu(self) -> Optional[float]:
         return self._params["step_mu"]
 
     @step_mu.setter
-    def step_mu(self, step_mu):
+    def step_mu(self, step_mu: Optional[float]) -> None:
         self._params["step_mu"] = step_mu
 
     @property
-    def step_sigma(self):
+    def step_sigma(self) -> Optional[float]:
         return self._params["step_sigma"]
 
     @step_sigma.setter
-    def step_sigma(self, step_sigma):
+    def step_sigma(self, step_sigma: Optional[float]) -> None:
         self._params["step_sigma"] = step_sigma
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> Optional[int]:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: Optional[int]) -> None:
         self._params["random_seed"] = random_seed
