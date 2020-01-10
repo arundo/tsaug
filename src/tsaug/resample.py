@@ -1,7 +1,7 @@
 """
 Resample module
 """
-from typing import List, Tuple, Union, Optional, Callable, Any
+from typing import Tuple, Optional
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -73,7 +73,8 @@ def resample(
                 [
                     Y[:, 0:1, :],
                     Y[:, interp_inds_0, :] * interp_weight_0.reshape(1, -1, 1)
-                    + Y[:, interp_inds_1, :] * interp_weight_1.reshape(1, -1, 1),
+                    + Y[:, interp_inds_1, :]
+                    * interp_weight_1.reshape(1, -1, 1),
                     Y[:, -1:, :],
                 ],
                 axis=1,

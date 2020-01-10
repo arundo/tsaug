@@ -56,7 +56,8 @@ def random_jitter(
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
     scale: np.ndarray = strength * np.stack(
-        [np.percentile(X, q=95, axis=1) - np.percentile(X, q=5, axis=1)] * n, axis=1,
+        [np.percentile(X, q=95, axis=1) - np.percentile(X, q=5, axis=1)] * n,
+        axis=1,
     )
 
     if dist == "normal":
