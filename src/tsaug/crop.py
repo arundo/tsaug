@@ -13,9 +13,9 @@ from .augmentor import _Augmentor
 def crop(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
-    crop_start: Optional[Union[int, np.ndarray]] = 0,
+    crop_start: Union[int, np.ndarray] = 0,
     crop_size: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Crop time series.
 
     Time series will be cropped based on given location and size of cropping
@@ -112,9 +112,9 @@ def random_crop(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
     crop_size: Optional[int] = None,
-    crops_per_series: Optional[int] = 1,
+    crops_per_series: int = 1,
     random_seed: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Crop time series randomly.
 
     Parameters
@@ -244,7 +244,10 @@ class Crop(_Augmentor):
         output_N = (
             (input_N[0] * self.M * crops_per_series, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M * crops_per_series)
+            else (
+                None,
+                input_N[1] * self.M * crops_per_series,
+            )  # TODO: fix None * int issue here
         )
         if self.crop_size is None:
             output_n = input_n
@@ -334,7 +337,10 @@ class RandomCrop(_Augmentor):
         output_N = (
             (input_N[0] * self.M * self.crops_per_series, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M * self.crops_per_series)
+            else (
+                None,
+                input_N[1] * self.M * self.crops_per_series,
+            )  # TODO: fix None * int issue here
         )
         if self.crop_size is None:
             output_n = input_n
