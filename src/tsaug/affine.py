@@ -13,8 +13,8 @@ from .augmentor import _Augmentor
 def affine(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
-    a: Optional[Union[float, np.ndarray]] = 1.0,
-    b: Optional[Union[float, np.ndarray]] = 0.0,
+    a: Union[float, np.ndarray] = 1.0,
+    b: Union[float, np.ndarray] = 0.0,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Perform affine transformation to time series.
 
@@ -88,10 +88,10 @@ def affine(
 def random_affine(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
-    max_a: Optional[float] = 10.0,
-    min_a: Optional[float] = -10.0,
-    max_b: Optional[float] = 100.0,
-    min_b: Optional[float] = -100.0,
+    max_a: float = 10.0,
+    min_a: float = -10.0,
+    max_b: float = 100.0,
+    min_b: float = -100.0,
     random_seed: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Perform affine transformation to time series with random coefficients.
@@ -173,8 +173,8 @@ class Affine(_Augmentor):
 
     def __init__(
         self,
-        a: Optional[Union[float, np.ndarray]] = 1.0,
-        b: Optional[Union[float, np.ndarray]] = 0.0,
+        a: Union[float, np.ndarray] = 1.0,
+        b: Union[float, np.ndarray] = 0.0,
     ) -> None:
         super().__init__(augmentor_func=affine, is_random=False, a=a, b=b)
 
@@ -229,10 +229,10 @@ class RandomAffine(_Augmentor):
 
     def __init__(
         self,
-        max_a: Optional[float] = 10.0,
-        min_a: Optional[float] = -10.0,
-        max_b: Optional[float] = 100.0,
-        min_b: Optional[float] = -100.0,
+        max_a: float = 10.0,
+        min_a: float = -10.0,
+        max_b: float = 100.0,
+        min_b: float = -100.0,
         random_seed: Optional[int] = None,
     ) -> None:
         super().__init__(
