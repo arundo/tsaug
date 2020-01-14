@@ -33,6 +33,10 @@ class _Augmentor:
             exists).
 
         """
+        if not callable(self._augmentor_func):
+            raise RuntimeError(
+                "Augmentation function is not defined correctly."
+            )
         if self._prob < 1:
             if X.ndim == 1:
                 r = np.random.uniform(size=self._M)
@@ -64,9 +68,10 @@ class _Augmentor:
                     X_aug, Y_aug, **self._params
                 )
             elif (r <= self._prob).any():
-                X_aug[r <= self._prob, :], Y_aug[
-                    r <= self._prob, :
-                ] = self._augmentor_func(
+                (
+                    X_aug[r <= self._prob, :],
+                    Y_aug[r <= self._prob, :],
+                ) = self._augmentor_func(
                     X_aug[r <= self._prob, :],
                     Y_aug[r <= self._prob, :],
                     **self._params
