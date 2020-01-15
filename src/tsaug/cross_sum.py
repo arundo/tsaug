@@ -10,7 +10,9 @@ from .augmentor import _Augmentor
 
 @dimensionalize
 def cross_sum(
-    X: np.ndarray, Y: Optional[np.ndarray] = None, inds: Optional[np.ndarray] = None
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    inds: Optional[np.ndarray] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Sum cross given time series.
 
@@ -45,9 +47,11 @@ def cross_sum(
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
 
     if inds is None:
@@ -59,17 +63,18 @@ def cross_sum(
     if inds.shape[0] != N:
         raise ValueError("Wrong shape of inds")
 
-    m: int = inds.shape[1]
+    m = inds.shape[1]  # type: int
 
-    X_aug: np.ndarray = X.copy()
+    X_aug = X.copy()  # type: np.ndarray
     if Y is None:
-        Y_aug = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y.copy()
 
     for k in range(m):
         X_aug[np.isnan(inds[:, k]) >= 0] = (
-            X_aug[np.isnan(inds[:, k]) >= 0] + X[inds[np.isnan(inds[:, k]) >= 0, k]]
+            X_aug[np.isnan(inds[:, k]) >= 0]
+            + X[inds[np.isnan(inds[:, k]) >= 0, k]]
         )
         if Y is not None:
             Y_aug[np.isnan(inds[:, k]) >= 0] = (  #  type: ignore
@@ -124,9 +129,11 @@ def random_cross_sum(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)
     inds = rand.choice(range(-1, N), size=(N, max_sum_series))
@@ -183,7 +190,9 @@ class RandomCrossSum(_Augmentor):
     """
 
     def __init__(
-        self, max_sum_series: Optional[int] = 5, random_seed: Optional[int] = None
+        self,
+        max_sum_series: Optional[int] = 5,
+        random_seed: Optional[int] = None,
     ) -> None:
         super().__init__(
             augmentor_func=random_cross_sum,

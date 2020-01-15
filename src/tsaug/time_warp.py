@@ -48,29 +48,31 @@ def random_time_warp(
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl: int = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
 
-    anchors: np.ndarray = np.arange(
+    anchors = np.arange(
         0.5 / n_speed_change, 1, 1 / n_speed_change
-    )
-    R: np.ndarray = (
+    )  # type: np.ndarray
+    R = (
         rand.uniform(
             low=-0.5 / n_speed_change,
             high=0.5 / n_speed_change,
             size=(N, n_speed_change),
         )
         * 0.5
-    )
-    anchor_values: np.ndarray = R + np.arange(
+    )  # type: np.ndarray
+    anchor_values = R + np.arange(
         0.5 / n_speed_change, 1, 1 / n_speed_change
-    )
+    )  # type: np.ndarray
 
     anchors = np.append([0], anchors)
     anchors = np.append(anchors, [1])
@@ -80,11 +82,11 @@ def random_time_warp(
     anchor_values = np.concatenate([anchor_values, np.ones((N, 1))], axis=1)
     anchor_values = anchor_values * (n - 1)
 
-    warp: np.ndarray = PchipInterpolator(x=anchors, y=anchor_values, axis=1)(
+    warp = PchipInterpolator(x=anchors, y=anchor_values, axis=1)(
         np.arange(n)
-    )
+    )  # type: np.ndarray
 
-    X_aug: np.ndarray = np.vstack(
+    X_aug = np.vstack(
         [
             interp1d(
                 np.arange(n),
@@ -95,10 +97,10 @@ def random_time_warp(
             )(warpi).reshape(1, n, c)
             for Xi, warpi in zip(X, warp)
         ]
-    )
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = np.vstack(
             [

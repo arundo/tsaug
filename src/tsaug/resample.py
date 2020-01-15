@@ -41,7 +41,7 @@ def resample(
 
     """
 
-    n: int = X.shape[1]
+    n = X.shape[1]  # type: int
 
     if (n_new is None) or (n_new == n):
         if Y is None:
@@ -49,13 +49,15 @@ def resample(
         else:
             return X.copy(), Y.copy()
 
-    interp: np.ndarray = np.arange(1, n_new - 1) / (n_new - 1) * (n - 1)
-    interp_inds_0: np.ndarray = interp.astype(int)
-    interp_inds_1: np.ndarray = interp_inds_0 + 1
-    interp_weight_1: np.ndarray = interp - interp_inds_0
-    interp_weight_0: np.ndarray = 1 - interp_weight_1
+    interp = (
+        np.arange(1, n_new - 1) / (n_new - 1) * (n - 1)
+    )  # type: np.ndarray
+    interp_inds_0 = interp.astype(int)  # type: np.ndarray
+    interp_inds_1 = interp_inds_0 + 1  # type: np.ndarray
+    interp_weight_1 = interp - interp_inds_0  # type: np.ndarray
+    interp_weight_0 = 1 - interp_weight_1  # type: np.ndarray
 
-    X_aug: np.ndarray = np.concatenate(
+    X_aug = np.concatenate(
         [
             X[:, 0:1, :],
             X[:, interp_inds_0, :] * interp_weight_0.reshape(1, -1, 1)
@@ -63,10 +65,10 @@ def resample(
             X[:, -1:, :],
         ],
         axis=1,
-    )
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = (
             np.concatenate(
@@ -133,13 +135,13 @@ class Resample(_Augmentor):
         Tuple[Optional[int], Optional[int]],
         Tuple[Optional[int], Optional[int]],
     ]:
-        output_N: Tuple[Optional[int], Optional[int]] = (
+        output_N = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
             else (None, input_N[1] * self.M)  # type: ignore
-        )
+        )  # type: Tuple[Optional[int], Optional[int]]
         if self.n_new is None:
-            output_n: Tuple[Optional[int], Optional[int]] = input_n
+            output_n = input_n  # type: Tuple[Optional[int], Optional[int]]
         else:
             output_n = (None, self.n_new)
         return output_N, output_n, input_c

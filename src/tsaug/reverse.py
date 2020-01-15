@@ -36,10 +36,10 @@ def reverse(
 
     """
 
-    X_aug: np.ndarray = X[:, ::-1, :].copy()
+    X_aug = X[:, ::-1, :].copy()  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y[:, ::-1, :].copy()
 

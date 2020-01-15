@@ -51,9 +51,11 @@ def affine(
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
 
     if isinstance(a, float) | isinstance(a, int):
@@ -74,10 +76,10 @@ def affine(
     if b.shape != (N, c):
         raise ValueError("Wrong shape of b")
 
-    X_aug: np.ndarray = X * a.reshape((N, 1, c)) + b.reshape((N, 1, c))
+    X_aug = X * a.reshape((N, 1, c)) + b.reshape((N, 1, c))  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y.copy()
 
@@ -140,13 +142,15 @@ def random_affine(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
-    a: np.ndarray = rand.uniform(low=min_a, high=max_a, size=(N, c))
-    b: np.ndarray = rand.uniform(low=min_b, high=max_b, size=(N, c))
+    a = rand.uniform(low=min_a, high=max_a, size=(N, c))  # type: np.ndarray
+    b = rand.uniform(low=min_b, high=max_b, size=(N, c))  # type: np.ndarray
 
     return affine(X, Y, a=a, b=b)
 

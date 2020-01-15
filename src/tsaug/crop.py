@@ -50,12 +50,14 @@ def crop(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl: int = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     if isinstance(crop_start, int):
         crop_start = (crop_start * np.ones(N)).astype(int)
@@ -66,7 +68,7 @@ def crop(
         raise ValueError("Wrong shape of `crop_start`")
 
     crop_start = crop_start.reshape(N, -1)
-    crops_per_series: int = crop_start.shape[1]
+    crops_per_series = crop_start.shape[1]  # type: int
 
     if crop_size is None:
         crop_size = n
@@ -77,7 +79,7 @@ def crop(
     if (crop_start + crop_size > n).any():
         raise ValueError("Inconsistent value of `crop_start` and `crop_size`")
 
-    X_aug: np.ndarray = X[
+    X_aug = X[
         np.hstack(
             [i * np.ones(crops_per_series * crop_size) for i in range(N)]
         )
@@ -87,10 +89,12 @@ def crop(
             int
         ),
         :,
-    ].reshape((N * crops_per_series, crop_size, c))
+    ].reshape(
+        (N * crops_per_series, crop_size, c)
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y[
             np.hstack(
@@ -148,9 +152,11 @@ def random_crop(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
     if crop_size is None:
@@ -159,9 +165,9 @@ def random_crop(
     if (crop_size > n) | (crop_size <= 0):
         raise ValueError("`crop_size` must between 1 and n")
 
-    crop_start: np.ndarray = rand.choice(
+    crop_start = rand.choice(
         n - crop_size + 1, size=(N, crops_per_series)
-    )
+    )  # type: np.ndarray
 
     return crop(X, Y, crop_start=crop_start, crop_size=crop_size)
 

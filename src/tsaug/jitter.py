@@ -50,27 +50,29 @@ def random_jitter(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
-    scale: np.ndarray = strength * np.stack(
+    scale = strength * np.stack(
         [np.percentile(X, q=95, axis=1) - np.percentile(X, q=5, axis=1)] * n,
         axis=1,
-    )
+    )  # type: np.ndarray
 
     if dist == "normal":
-        R: np.ndarray = rand.normal(size=X.shape, scale=1 / 3)
+        R = rand.normal(size=X.shape, scale=1 / 3)  # type: np.ndarray
     elif dist == "uniform":
         R = rand.uniform(size=X.shape, low=-1, high=1)
     else:
         raise ValueError("`dist` must be either 'normal' or 'uniform")
 
-    X_aug: np.ndarray = X + scale * R
+    X_aug = X + scale * R  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y.copy()
 

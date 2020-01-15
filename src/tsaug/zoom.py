@@ -57,32 +57,38 @@ def magnify(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl: int = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     if size is not None:
         if Y is None:
-            X_crop: np.ndarray = crop(X, crop_start=start, crop_size=size)
+            X_crop = crop(
+                X, crop_start=start, crop_size=size
+            )  # type: np.ndarray
             return resample(X_crop, n_new=n)
         else:
-            Y_crop: np.ndarray
+            Y_crop = (
+                []
+            )  # type: np.ndarray  # See earlier variable attribution hack
             X_crop, Y_crop = crop(X, Y, crop_start=start, crop_size=size)
             return resample(X_crop, Y_crop, n_new=n)
     else:
         if end is None:
             end = n
-        sizes: Union[int, np.ndarray] = end - start
+        sizes = end - start  # type: Union[int, np.ndarray]
         if isinstance(sizes, int):
             return magnify(X, Y, start=start, size=end - start)
         else:
-            counter: Mapping[int, int] = Counter(sizes)
-            X_zoom: np.ndarray = np.zeros((N, n, c))
+            counter = Counter(sizes)  # type: Mapping[int, int]
+            X_zoom = np.zeros((N, n, c))  # type: np.ndarray
             if Y is None:
-                Y_zoom: Optional[np.ndarray] = None
+                Y_zoom = None  # type: Optional[np.ndarray]
             else:
                 Y_zoom = np.zeros((N, n, cl))
             for size, count in counter.items():
@@ -152,9 +158,11 @@ def random_magnify(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
 
@@ -164,18 +172,22 @@ def random_magnify(
     if max_zoom < min_zoom:
         raise ValueError("`max_zoom` must be greater or equal to `min_zoom`")
 
-    max_size: int = max(int(round(n / min_zoom)), 1)
-    min_size: int = max(int(round(n / max_zoom)), 1)
+    max_size = max(int(round(n / min_zoom)), 1)  # type: int
+    min_size = max(int(round(n / max_zoom)), 1)  # type: int
 
     if max_size == min_size:
-        size: int = max_size
-        start: Union[int, np.ndarray] = rand.choice(n - size + 1, size=N)
+        size = max_size  # type: int
+        start = rand.choice(
+            n - size + 1, size=N
+        )  # type: Union[int, np.ndarray]
         return magnify(X, Y, start=start, size=size)
     else:
-        sizes: np.ndarray = rand.choice(range(min_size, max_size + 1), size=N)
-        counter: Mapping[int, int] = Counter(sizes)
+        sizes = rand.choice(
+            range(min_size, max_size + 1), size=N
+        )  # type: np.ndarray
+        counter = Counter(sizes)  # type: Mapping[int, int]
         start = np.zeros(N)
-        end: np.ndarray = np.zeros(N)
+        end = np.zeros(N)  # type: np.ndarray
         for size in range(min_size, max_size + 1):
             start[sizes == size] = rand.choice(
                 n - size + 1, size=counter[size]

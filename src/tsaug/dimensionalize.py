@@ -15,16 +15,23 @@ def dimensionalize(f: Callable) -> Callable:
 
     @wraps(f)
     def g(
-        X: np.ndarray, Y: Optional[np.ndarray] = None, *args: Any, **kwargs: Any
+        X: np.ndarray,
+        Y: Optional[np.ndarray] = None,
+        *args: Any,
+        **kwargs: Any
     ) -> Tuple[np.ndarray, np.ndarray]:
 
+        N = (
+            0
+        )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+        n = 0  # type: int
+        c = 0  # type: int
         if X.ndim == 1:
-            Xndim: int = 1
-            n: int = len(X)
+            Xndim = 1  # type: int
+            n = len(X)
             X = X.reshape((1, n, 1))
         elif X.ndim == 2:
             Xndim = 2
-            N: int
             N, n = X.shape
             X = X.reshape((N, n, 1))
         elif X.ndim == 3:
@@ -32,14 +39,13 @@ def dimensionalize(f: Callable) -> Callable:
         else:
             raise ValueError("Wrong shape of X")
 
-        c: int
         N, n, c = X.shape
 
         if Y is None:
             pass
         else:
             if Y.ndim == 1:
-                Yndim: int = 1
+                Yndim = 1  # type: int
                 n = len(Y)
                 Y = Y.reshape((1, n, 1))
             elif Y.ndim == 2:
@@ -56,8 +62,8 @@ def dimensionalize(f: Callable) -> Callable:
 
         returns = f(X, Y, *args, **kwargs)
         if isinstance(returns, tuple):
-            X_aug: np.ndarray = returns[0]
-            Y_aug: np.ndarray = returns[1]
+            X_aug = returns[0]  # type: np.ndarray
+            Y_aug = returns[1]  # type: np.ndarray
         else:
             X_aug = returns
 

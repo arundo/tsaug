@@ -12,9 +12,9 @@ class _Augmentor:
     ) -> None:
         self._augmentor_func = augmentor_func
         self._is_random = is_random
-        self._M: int = 1
-        self._prob: float = 1.0
-        self._params: Any = kwargs
+        self._M = 1  # type: int
+        self._prob = 1.0  # type: float
+        self._params = kwargs  # type: Any
 
     def run(
         self, X: np.ndarray, Y: Optional[np.ndarray] = None
@@ -48,12 +48,12 @@ class _Augmentor:
             )
         if self._prob < 1:
             if X.ndim == 1:
-                r: np.ndarray = np.random.uniform(size=self._M)
+                r = np.random.uniform(size=self._M)  # type: np.ndarray
             else:
                 r = np.random.uniform(size=X.shape[0] * self._M)
         if Y is None:
             if self._M == 1:
-                X_aug: np.ndarray = X.copy()
+                X_aug = X.copy()  # type: np.ndarray
             else:
                 X_aug = np.vstack([X.copy()] * self._M)
             if self._prob == 1:
@@ -68,7 +68,7 @@ class _Augmentor:
         else:
             if self._M == 1:
                 X_aug = X.copy()
-                Y_aug: np.ndarray = Y.copy()
+                Y_aug = Y.copy()  # type: np.ndarray
             else:
                 X_aug = np.vstack([X.copy()] * self._M)
                 Y_aug = np.vstack([Y.copy()] * self._M)
@@ -210,11 +210,11 @@ class _Augmentor:
             applicable.
 
         """
-        output_N: Tuple[Optional[int], Optional[int]] = (
+        output_N = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
             else (None, input_N[1] * self.M)  # type: ignore
-        )
+        )  # type: Tuple[Optional[int], Optional[int]]
         return output_N, input_n, input_c
 
 

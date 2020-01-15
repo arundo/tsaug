@@ -46,9 +46,11 @@ def trend(
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
 
     if anchors is None:
@@ -66,14 +68,16 @@ def trend(
     ):
         raise ValueError("Wrong shape of anchors.")
 
-    m: int = anchors.shape[1]
+    m = anchors.shape[1]  # type: int
 
-    interpFuncs: Callable = CubicSpline(np.linspace(0, n, m), anchors, axis=1)
+    interpFuncs = CubicSpline(
+        np.linspace(0, n, m), anchors, axis=1
+    )  # type: Callable
 
-    X_aug: np.ndarray = interpFuncs(np.arange(n)) + X
+    X_aug = interpFuncs(np.arange(n)) + X  # type: np.ndarray
 
     if Y is None:
-        Y_aug: Optional[np.ndarray] = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y.copy()
 
@@ -129,14 +133,16 @@ def random_trend(
 
     """
 
-    N: int
-    n: int
-    c: int
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
-    anchors: np.ndarray = np.cumsum(
+    anchors = np.cumsum(
         rand.normal(size=(N, num_anchors, c)), axis=1
-    )
+    )  # type: np.ndarray
     anchors = (anchors - anchors.min(axis=1).reshape((N, 1, c))) / (
         anchors.max(axis=1) - anchors.min(axis=1)
     ).reshape((N, 1, c))

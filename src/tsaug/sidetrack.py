@@ -86,10 +86,11 @@ def random_sidetrack(
             "Argument `initial_sidetrack` is greater than `max_sidetrack`."
         )
 
-    N: int
-    n: int
-    c: int
-    M: np.ndarray
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
     M = (
@@ -97,11 +98,11 @@ def random_sidetrack(
             rand.normal(size=X.shape, loc=step_mu, scale=step_sigma), axis=1
         )
         + initial_sidetrack
-    )
+    )  # type: np.ndarray
     if (max_sidetrack is not None) and (min_sidetrack is not None):
-        layer: int = int(
-            (M - min_sidetrack) // (max_sidetrack - min_sidetrack)
-        )
+        layer = (M - min_sidetrack) // (
+            max_sidetrack - min_sidetrack
+        )  # type: float
         M = M - layer * (max_sidetrack - min_sidetrack)
         M[layer % 2 == 1] = max_sidetrack + min_sidetrack - M[layer % 2 == 1]
     elif (max_sidetrack is not None) and (min_sidetrack is None):
