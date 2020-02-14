@@ -25,7 +25,7 @@ def magnify(
 
     Parameters
     ----------
-    X : numpy.ndarray 
+    X : numpy.ndarray
         Time series to be augmented. Matrix with shape (n,), (N, n) or (N, n,
         c), where n is the length of each series, N is the number of series,
         and c is the number of channels.
@@ -103,7 +103,7 @@ def magnify(
                 else:
                     (
                         X_zoom[sizes == size, :, :],
-                        Y_zoom[sizes == size, :, :],
+                        Y_zoom[sizes == size, :, :],  # type: ignore # TODO: find workaround
                     ) = magnify(
                         X[sizes == size, :, :],
                         Y[sizes == size, :, :],

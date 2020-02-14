@@ -2,7 +2,7 @@
 Crop time series
 """
 
-from typing import Tuple, Union, Optional, Callable
+from typing import Tuple, Union, Optional
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -252,7 +252,7 @@ class Crop(_Augmentor):
             if (input_N[0] is not None)
             else (
                 None,
-                input_N[1] * self.M * crops_per_series,
+                input_N[1] * self.M * crops_per_series,  # type: ignore
             )  # TODO: fix None * int issue here
         )
         if self.crop_size is None:
@@ -345,7 +345,7 @@ class RandomCrop(_Augmentor):
             if (input_N[0] is not None)
             else (
                 None,
-                input_N[1] * self.M * self.crops_per_series,
+                input_N[1] * self.M * self.crops_per_series,  # type: ignore
             )  # TODO: fix None * int issue here
         )
         if self.crop_size is None:

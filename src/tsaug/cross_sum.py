@@ -1,7 +1,7 @@
 """
 Cross sum
 """
-from typing import List, Tuple, Union, Optional, Callable, Any
+from typing import Tuple, Optional
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -77,13 +77,13 @@ def cross_sum(
             + X[inds[np.isnan(inds[:, k]) >= 0, k]]
         )
         if Y is not None:
-            Y_aug[np.isnan(inds[:, k]) >= 0] = (  #  type: ignore
-                Y_aug[np.isnan(inds[:, k]) >= 0]  #  type: ignore
+            Y_aug[np.isnan(inds[:, k]) >= 0] = (  # type: ignore
+                Y_aug[np.isnan(inds[:, k]) >= 0]  # type: ignore
                 + Y[inds[np.isnan(inds[:, k]) >= 0, k]]
             )
 
     if Y is not None:
-        Y_aug = (Y_aug >= 1).astype(int)  #  type: ignore
+        Y_aug = (Y_aug >= 1).astype(int)  # type: ignore
 
     return X_aug, Y_aug
 
