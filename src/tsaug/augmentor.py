@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, Optional, Callable, Any
+from typing import List, Tuple, Union, Optional, Callable, Any, Dict
 
 import numpy as np
 
@@ -6,15 +6,15 @@ import numpy as np
 class _Augmentor:
     def __init__(
         self,
-        augmentor_func: Optional[Callable[..., np.ndarray]] = None,
-        is_random: Optional[bool] = None,
+        augmentor_func: Callable[..., np.ndarray],
+        is_random: bool,
         **kwargs: Any
     ) -> None:
         self._augmentor_func = augmentor_func
         self._is_random = is_random
         self._M = 1  # type: int
         self._prob = 1.0  # type: float
-        self._params = kwargs  # type: Any
+        self._params = kwargs  # type: Dict
 
     def run(
         self, X: np.ndarray, Y: Optional[np.ndarray] = None

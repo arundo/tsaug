@@ -15,7 +15,7 @@ def affine(
     Y: Optional[np.ndarray] = None,
     a: Union[float, np.ndarray] = 1.0,
     b: Union[float, np.ndarray] = 0.0,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Perform affine transformation to time series.
 
     A series x will be transformed to a*x+b, while binary label y will not be
@@ -95,7 +95,7 @@ def random_affine(
     max_b: float = 100.0,
     min_b: float = -100.0,
     random_seed: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Perform affine transformation to time series with random coefficients.
 
     A series x will be transformed to a*x+b, while binary label y will not be

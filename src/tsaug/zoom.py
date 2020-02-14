@@ -25,7 +25,7 @@ def magnify(
 
     Parameters
     ----------
-    X : numpy.ndarray[sizes == size] 
+    X : numpy.ndarray 
         Time series to be augmented. Matrix with shape (n,), (N, n) or (N, n,
         c), where n is the length of each series, N is the number of series,
         and c is the number of channels.
@@ -43,7 +43,7 @@ def magnify(
 
     end : int or numpy.ndarray, optional
         Indices of the ending positions of time windows to be magnified. If
-        an integer, all series use the same value. Only used when argument[sizes == size] 
+        an integer, all series use the same value. Only used when argument
         `size` is not given. Default: n.
 
     size : int, optional

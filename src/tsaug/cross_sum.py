@@ -13,7 +13,7 @@ def cross_sum(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
     inds: Optional[np.ndarray] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Sum cross given time series.
 
     Time series will be summed with others based on the given indices. Time
@@ -94,7 +94,7 @@ def random_cross_sum(
     Y: Optional[np.ndarray] = None,
     max_sum_series: Optional[int] = 5,
     random_seed: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Sum cross given time series randomly.
 
     Time series will be summed with others randomly. Time points at which at

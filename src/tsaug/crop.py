@@ -282,7 +282,7 @@ class RandomCrop(_Augmentor):
     def __init__(
         self,
         crop_size: Optional[int] = None,
-        crops_per_series: Optional[int] = 1,
+        crops_per_series: int = 1,
         random_seed: Optional[int] = None,
     ) -> None:
         super().__init__(

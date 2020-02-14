@@ -1,7 +1,7 @@
 """
 decorator of dimensionalize X and Y input
 """
-from typing import Callable, Optional, Tuple, Any
+from typing import Callable, Optional, Tuple, Any, Union
 from functools import wraps
 
 import numpy as np
@@ -19,7 +19,7 @@ def dimensionalize(f: Callable) -> Callable:
         Y: Optional[np.ndarray] = None,
         *args: Any,
         **kwargs: Any
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
 
         N = (
             0
