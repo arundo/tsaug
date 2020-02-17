@@ -95,7 +95,7 @@ def magnify(
                 if (Y is None) or (Y_zoom is None):
                     X_zoom[sizes == size, :, :] = magnify(
                         X[sizes == size, :, :],
-                        start=np.array([start] * (sizes == size).sum())
+                        start=np.array([start] * count)
                         if isinstance(start, int)
                         else start[sizes == size],
                         size=size,
@@ -107,7 +107,7 @@ def magnify(
                     ) = magnify(
                         X[sizes == size, :, :],
                         Y[sizes == size, :, :],
-                        start=np.array([start] * (sizes == size).sum())
+                        start=np.array([start] * count)
                         if isinstance(start, int)
                         else start[sizes == size],
                         size=size,
