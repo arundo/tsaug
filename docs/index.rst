@@ -2,7 +2,7 @@
 tsaug
 =====
 
-`tsaug` is a Python package for time series augmentation. It offers a set of 
+`tsaug` is a Python package for time series augmentation. It offers a set of
 augmentation methods for time series with unified APIs, as well as operators to
 connect multiple augmentors into a pipeline.
 
@@ -14,6 +14,7 @@ connect multiple augmentors into a pipeline.
    quickstart.ipynb
    references
    developer
+   releasehistory
 
 
 
