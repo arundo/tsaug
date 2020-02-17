@@ -92,7 +92,7 @@ def magnify(
             else:
                 Y_zoom = np.zeros((N, n, cl))
             for size, count in counter.items():
-                if Y is None:
+                if (Y is None) or (Y_zoom is None):
                     X_zoom[sizes == size, :, :] = magnify(
                         X[sizes == size, :, :],
                         start=np.array([start] * (sizes == size).sum())
@@ -103,7 +103,7 @@ def magnify(
                 else:
                     (
                         X_zoom[sizes == size, :, :],
-                        Y_zoom[sizes == size, :, :],  # type: ignore # TODO: find workaround
+                        Y_zoom[sizes == size, :, :],
                     ) = magnify(
                         X[sizes == size, :, :],
                         Y[sizes == size, :, :],
