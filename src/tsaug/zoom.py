@@ -16,7 +16,7 @@ def magnify(
     X: np.ndarray,
     Y: Optional[np.ndarray] = None,
     start: Union[int, np.ndarray] = 0,
-    end: Union[int, np.ndarray] = None,
+    end: Optional[Union[int, np.ndarray]] = None,
     size: Optional[int] = None,
 ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Magnify time intervels of time series.
