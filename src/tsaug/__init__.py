@@ -2,7 +2,7 @@
 tsaug
 =====
 
-`tsaug` is a Python package for time series augmentation. It offers a set of 
+`tsaug` is a Python package for time series augmentation. It offers a set of
 augmentation methods for time series with unified APIs, as well as operators to
 connect multiple augmentors into a pipeline.
 
@@ -26,7 +26,7 @@ See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 # Dev branch marker is: 'X.Y.dev' or 'X.Y.devN' where N is an integer.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
 #
-__version__ = "0.1"
+__version__ = "0.1.1"
 
 from .time_warp import random_time_warp, RandomTimeWarp
 from .zoom import magnify, random_magnify, Magnify, RandomMagnify
