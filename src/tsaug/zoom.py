@@ -1,6 +1,7 @@
 """
 magnify
 """
+from typing import Tuple, Optional, Union, Mapping
 
 from collections import Counter
 import numpy as np
@@ -11,7 +12,13 @@ from .augmentor import _Augmentor
 
 
 @dimensionalize
-def magnify(X, Y=None, start=0, end=None, size=None):
+def magnify(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    start: Union[int, np.ndarray] = 0,
+    end: Optional[Union[int, np.ndarray]] = None,
+    size: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Magnify time intervels of time series.
 
     This transformation does not change the number of time points in a series.
@@ -50,51 +57,73 @@ def magnify(X, Y=None, start=0, end=None, size=None):
 
     """
 
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     if size is not None:
         if Y is None:
-            X_crop = crop(X, crop_start=start, crop_size=size)
+            X_crop = crop(
+                X, crop_start=start, crop_size=size
+            )  # type: np.ndarray
             return resample(X_crop, n_new=n)
         else:
+            Y_crop = (
+                []
+            )  # type: np.ndarray  # See earlier variable attribution hack
             X_crop, Y_crop = crop(X, Y, crop_start=start, crop_size=size)
             return resample(X_crop, Y_crop, n_new=n)
     else:
         if end is None:
             end = n
-        sizes = end - start
+        sizes = end - start  # type: Union[int, np.ndarray]
         if isinstance(sizes, int):
             return magnify(X, Y, start=start, size=end - start)
         else:
-            counter = Counter(sizes)
-            X_zoom = np.zeros((N, n, c))
+            counter = Counter(sizes)  # type: Mapping[int, int]
+            X_zoom = np.zeros((N, n, c))  # type: np.ndarray
             if Y is None:
-                Y_zoom = None
+                Y_zoom = None  # type: Optional[np.ndarray]
             else:
                 Y_zoom = np.zeros((N, n, cl))
+            # if the windows to be magnified have different sizes across the input, we run over each size
             for size, count in counter.items():
-                if Y is None:
+                if (Y is None) or (Y_zoom is None):
                     X_zoom[sizes == size, :, :] = magnify(
                         X[sizes == size, :, :],
-                        start=start[sizes == size],
+                        start=np.array([start] * count)
+                        if isinstance(start, int)
+                        else start[sizes == size],
                         size=size,
                     )
                 else:
-                    X_zoom[sizes == size, :, :], Y_zoom[
-                        sizes == size, :, :
-                    ] = magnify(
+                    (
+                        X_zoom[sizes == size, :, :],
+                        Y_zoom[sizes == size, :, :],
+                    ) = magnify(
                         X[sizes == size, :, :],
                         Y[sizes == size, :, :],
-                        start=start[sizes == size],
+                        start=np.array([start] * count)
+                        if isinstance(start, int)
+                        else start[sizes == size],
                         size=size,
                     )
         return X_zoom, Y_zoom
 
 
 @dimensionalize
-def random_magnify(X, Y=None, max_zoom=2.0, min_zoom=1.0, random_seed=None):
+def random_magnify(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    max_zoom: float = 2.0,
+    min_zoom: float = 1.0,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Magnify random time intervels of time series.
 
     This transformation does not change the number of time points in a series.
@@ -113,10 +142,10 @@ def random_magnify(X, Y=None, max_zoom=2.0, min_zoom=1.0, random_seed=None):
         series, and cl is the number of classes (i.e. types of anomaly).
         Default: None.
 
-    max_zoom : int, optional
+    max_zoom : float, optional
         Maximal zooming factor. Default: 2.0.
 
-    min_zoom : int, optional
+    min_zoom : float, optional
         Minimal zooming factor. Default: 1.0.
 
     random_seed : int, optional
@@ -130,6 +159,11 @@ def random_magnify(X, Y=None, max_zoom=2.0, min_zoom=1.0, random_seed=None):
 
     """
 
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)
 
@@ -139,18 +173,22 @@ def random_magnify(X, Y=None, max_zoom=2.0, min_zoom=1.0, random_seed=None):
     if max_zoom < min_zoom:
         raise ValueError("`max_zoom` must be greater or equal to `min_zoom`")
 
-    max_size = max(int(round(n / min_zoom)), 1)
-    min_size = max(int(round(n / max_zoom)), 1)
+    max_size = max(int(round(n / min_zoom)), 1)  # type: int
+    min_size = max(int(round(n / max_zoom)), 1)  # type: int
 
     if max_size == min_size:
-        size = max_size
-        start = rand.choice(n - size + 1, size=N)
+        size = max_size  # type: int
+        start = rand.choice(
+            n - size + 1, size=N
+        )  # type: Union[int, np.ndarray]
         return magnify(X, Y, start=start, size=size)
     else:
-        sizes = rand.choice(range(min_size, max_size + 1), size=N)
-        counter = Counter(sizes)
+        sizes = rand.choice(
+            range(min_size, max_size + 1), size=N
+        )  # type: np.ndarray
+        counter = Counter(sizes)  # type: Mapping[int, int]
         start = np.zeros(N)
-        end = np.zeros(N)
+        end = np.zeros(N)  # type: np.ndarray
         for size in range(min_size, max_size + 1):
             start[sizes == size] = rand.choice(
                 n - size + 1, size=counter[size]
@@ -181,7 +219,12 @@ class Magnify(_Augmentor):
 
     """
 
-    def __init__(self, start=0, end=None, size=None):
+    def __init__(
+        self,
+        start: Union[int, np.ndarray] = 0,
+        end: Optional[Union[int, np.ndarray]] = None,
+        size: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=magnify,
             is_random=False,
@@ -191,27 +234,27 @@ class Magnify(_Augmentor):
         )
 
     @property
-    def start(self):
+    def start(self) -> Union[int, np.ndarray]:
         return self._params["start"]
 
     @start.setter
-    def start(self, start):
+    def start(self, start: Union[int, np.ndarray]) -> None:
         self._params["start"] = start
 
     @property
-    def end(self):
+    def end(self) -> Optional[Union[int, np.ndarray]]:
         return self._params["end"]
 
     @end.setter
-    def end(self, end):
+    def end(self, end: Optional[Union[int, np.ndarray]]) -> None:
         self._params["end"] = end
 
     @property
-    def size(self):
+    def size(self) -> Optional[int]:
         return self._params["size"]
 
     @size.setter
-    def size(self, size):
+    def size(self, size: Optional[int]) -> None:
         self._params["size"] = size
 
 
@@ -222,10 +265,10 @@ class RandomMagnify(_Augmentor):
 
     Parameters
     ----------
-    max_zoom : int, optional
+    max_zoom : float, optional
         Maximal zooming factor. Default: 2.0.
 
-    min_zoom : int, optional
+    min_zoom : float, optional
         Minimal zooming factor. Default: 1.0.
 
     random_seed : int, optional
@@ -234,7 +277,12 @@ class RandomMagnify(_Augmentor):
 
     """
 
-    def __init__(self, max_zoom=2.0, min_zoom=1.0, random_seed=None):
+    def __init__(
+        self,
+        max_zoom: float = 2.0,
+        min_zoom: float = 1.0,
+        random_seed: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=random_magnify,
             is_random=True,
@@ -244,25 +292,25 @@ class RandomMagnify(_Augmentor):
         )
 
     @property
-    def max_zoom(self):
+    def max_zoom(self) -> float:
         return self._params["max_zoom"]
 
     @max_zoom.setter
-    def max_zoom(self, max_zoom):
+    def max_zoom(self, max_zoom: float) -> None:
         self._params["max_zoom"] = max_zoom
 
     @property
-    def min_zoom(self):
+    def min_zoom(self) -> float:
         return self._params["min_zoom"]
 
     @min_zoom.setter
-    def min_zoom(self, min_zoom):
+    def min_zoom(self, min_zoom: float) -> None:
         self._params["min_zoom"] = min_zoom
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> Optional[int]:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: Optional[int]) -> None:
         self._params["random_seed"] = random_seed

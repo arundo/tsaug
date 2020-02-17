@@ -1,6 +1,7 @@
 """
 Time warping module
 """
+from typing import Tuple, Optional
 
 import numpy as np
 from scipy.interpolate import interp1d, PchipInterpolator
@@ -9,7 +10,12 @@ from .augmentor import _Augmentor
 
 
 @dimensionalize
-def random_time_warp(X, Y=None, n_speed_change=3, random_seed=None):
+def random_time_warp(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    n_speed_change: int = 3,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Warp time line of time series randomly.
 
     The speed at which the time line advances is a random smooth curve with a
@@ -42,13 +48,20 @@ def random_time_warp(X, Y=None, n_speed_change=3, random_seed=None):
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     rand = np.random.RandomState(random_seed)
 
-    anchors = np.arange(0.5 / n_speed_change, 1, 1 / n_speed_change)
+    anchors = np.arange(
+        0.5 / n_speed_change, 1, 1 / n_speed_change
+    )  # type: np.ndarray
     R = (
         rand.uniform(
             low=-0.5 / n_speed_change,
@@ -56,8 +69,10 @@ def random_time_warp(X, Y=None, n_speed_change=3, random_seed=None):
             size=(N, n_speed_change),
         )
         * 0.5
-    )
-    anchor_values = R + np.arange(0.5 / n_speed_change, 1, 1 / n_speed_change)
+    )  # type: np.ndarray
+    anchor_values = R + np.arange(
+        0.5 / n_speed_change, 1, 1 / n_speed_change
+    )  # type: np.ndarray
 
     anchors = np.append([0], anchors)
     anchors = np.append(anchors, [1])
@@ -67,7 +82,9 @@ def random_time_warp(X, Y=None, n_speed_change=3, random_seed=None):
     anchor_values = np.concatenate([anchor_values, np.ones((N, 1))], axis=1)
     anchor_values = anchor_values * (n - 1)
 
-    warp = PchipInterpolator(x=anchors, y=anchor_values, axis=1)(np.arange(n))
+    warp = PchipInterpolator(x=anchors, y=anchor_values, axis=1)(
+        np.arange(n)
+    )  # type: np.ndarray
 
     X_aug = np.vstack(
         [
@@ -80,10 +97,10 @@ def random_time_warp(X, Y=None, n_speed_change=3, random_seed=None):
             )(warpi).reshape(1, n, c)
             for Xi, warpi in zip(X, warp)
         ]
-    )
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = np.vstack(
             [
@@ -119,7 +136,9 @@ class RandomTimeWarp(_Augmentor):
 
     """
 
-    def __init__(self, n_speed_change=3, random_seed=None):
+    def __init__(
+        self, n_speed_change: int = 3, random_seed: Optional[int] = None
+    ) -> None:
         super().__init__(
             augmentor_func=random_time_warp,
             is_random=True,
@@ -128,17 +147,17 @@ class RandomTimeWarp(_Augmentor):
         )
 
     @property
-    def n_speed_change(self):
+    def n_speed_change(self) -> int:
         return self._params["n_speed_change"]
 
     @n_speed_change.setter
-    def n_speed_change(self, n_speed_change):
+    def n_speed_change(self, n_speed_change: int) -> None:
         self._params["n_speed_change"] = n_speed_change
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> Optional[int]:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: Optional[int]) -> None:
         self._params["random_seed"] = random_seed

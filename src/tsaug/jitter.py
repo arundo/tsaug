@@ -1,6 +1,7 @@
 """
 Jitter module
 """
+from typing import Tuple, Optional
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -8,7 +9,13 @@ from .augmentor import _Augmentor
 
 
 @dimensionalize
-def random_jitter(X, Y=None, dist="normal", strength=0.05, random_seed=None):
+def random_jitter(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    dist: Optional[str] = "normal",
+    strength: Optional[float] = 0.05,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Add random noise to time series.
 
     Parameters
@@ -43,24 +50,29 @@ def random_jitter(X, Y=None, dist="normal", strength=0.05, random_seed=None):
 
     """
 
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)
     scale = strength * np.stack(
         [np.percentile(X, q=95, axis=1) - np.percentile(X, q=5, axis=1)] * n,
         axis=1,
-    )
+    )  # type: np.ndarray
 
     if dist == "normal":
-        R = rand.normal(size=X.shape, scale=1 / 3)
+        R = rand.normal(size=X.shape, scale=1 / 3)  # type: np.ndarray
     elif dist == "uniform":
         R = rand.uniform(size=X.shape, low=-1, high=1)
     else:
         raise ValueError("`dist` must be either 'normal' or 'uniform")
 
-    X_aug = X + scale * R
+    X_aug = X + scale * R  # type: np.ndarray
 
     if Y is None:
-        Y_aug = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y.copy()
 
@@ -85,7 +97,12 @@ class RandomJitter(_Augmentor):
 
     """
 
-    def __init__(self, dist="normal", strength=0.05, random_seed=None):
+    def __init__(
+        self,
+        dist: Optional[str] = "normal",
+        strength: Optional[float] = 0.05,
+        random_seed: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=random_jitter,
             is_random=True,
@@ -95,25 +112,25 @@ class RandomJitter(_Augmentor):
         )
 
     @property
-    def dist(self):
+    def dist(self) -> Optional[str]:
         return self._params["dist"]
 
     @dist.setter
-    def dist(self, dist):
+    def dist(self, dist: Optional[str]) -> None:
         self._params["dist"] = dist
 
     @property
-    def strength(self):
+    def strength(self) -> Optional[float]:
         return self._params["strength"]
 
     @strength.setter
-    def strength(self, strength):
+    def strength(self, strength: Optional[float]) -> None:
         self._params["strength"] = strength
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> Optional[int]:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: Optional[int]) -> None:
         self._params["random_seed"] = random_seed

@@ -2,13 +2,20 @@
 Crop time series
 """
 
+from typing import Tuple, Union, Optional
+
 import numpy as np
 from .dimensionalize import dimensionalize
 from .augmentor import _Augmentor
 
 
 @dimensionalize
-def crop(X, Y=None, crop_start=0, crop_size=None):
+def crop(
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    crop_start: Union[int, np.ndarray] = 0,
+    crop_size: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Crop time series.
 
     Time series will be cropped based on given location and size of cropping
@@ -42,9 +49,15 @@ def crop(X, Y=None, crop_start=0, crop_size=None):
         Augmented time series and augmented labels (if argument `Y` exists).
 
     """
+
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     if Y is not None:
-        cl = Y.shape[2]
+        cl = Y.shape[2]  # type: int
 
     if isinstance(crop_start, int):
         crop_start = (crop_start * np.ones(N)).astype(int)
@@ -55,7 +68,7 @@ def crop(X, Y=None, crop_start=0, crop_size=None):
         raise ValueError("Wrong shape of `crop_start`")
 
     crop_start = crop_start.reshape(N, -1)
-    crops_per_series = crop_start.shape[1]
+    crops_per_series = crop_start.shape[1]  # type: int
 
     if crop_size is None:
         crop_size = n
@@ -76,10 +89,12 @@ def crop(X, Y=None, crop_start=0, crop_size=None):
             int
         ),
         :,
-    ].reshape((N * crops_per_series, crop_size, c))
+    ].reshape(
+        (N * crops_per_series, crop_size, c)
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = Y[
             np.hstack(
@@ -98,8 +113,12 @@ def crop(X, Y=None, crop_start=0, crop_size=None):
 
 @dimensionalize
 def random_crop(
-    X, Y=None, crop_size=None, crops_per_series=1, random_seed=None
-):
+    X: np.ndarray,
+    Y: Optional[np.ndarray] = None,
+    crop_size: Optional[int] = None,
+    crops_per_series: int = 1,
+    random_seed: Optional[int] = None,
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Crop time series randomly.
 
     Parameters
@@ -133,6 +152,11 @@ def random_crop(
 
     """
 
+    N = (
+        0
+    )  # type: int  # NOTE: this is a horrible hack to type hint for Python 3.5
+    n = 0  # type: int
+    c = 0  # type: int
     N, n, c = X.shape
     rand = np.random.RandomState(random_seed)
     if crop_size is None:
@@ -141,7 +165,9 @@ def random_crop(
     if (crop_size > n) | (crop_size <= 0):
         raise ValueError("`crop_size` must between 1 and n")
 
-    crop_start = rand.choice(n - crop_size + 1, size=(N, crops_per_series))
+    crop_start = rand.choice(
+        n - crop_size + 1, size=(N, crops_per_series)
+    )  # type: np.ndarray
 
     return crop(X, Y, crop_start=crop_start, crop_size=crop_size)
 
@@ -164,7 +190,11 @@ class Crop(_Augmentor):
 
     """
 
-    def __init__(self, crop_start=0, crop_size=None):
+    def __init__(
+        self,
+        crop_start: Union[int, np.ndarray] = 0,
+        crop_size: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=crop,
             is_random=False,
@@ -173,11 +203,11 @@ class Crop(_Augmentor):
         )
 
     @property
-    def prob(self):
+    def prob(self) -> float:
         return self._prob
 
     @prob.setter
-    def prob(self, prob):
+    def prob(self, prob: float) -> None:
         if (prob != 1.0) & (prob != 0.0):
             raise ValueError(
                 "Crop augmentor may change the length of time series, "
@@ -186,24 +216,37 @@ class Crop(_Augmentor):
         self._prob = prob
 
     @property
-    def crop_start(self):
+    def crop_start(self) -> Union[int, np.ndarray]:
         return self._params["crop_start"]
 
     @crop_start.setter
-    def crop_start(self, crop_start):
+    def crop_start(self, crop_start: Union[int, np.ndarray]) -> None:
         self._params["crop_start"] = crop_start
 
     @property
-    def crop_size(self):
+    def crop_size(self) -> int:
         return self._params["crop_size"]
 
     @crop_size.setter
-    def crop_size(self, crop_size):
+    def crop_size(self, crop_size: int) -> None:
         self._params["crop_size"] = crop_size
 
     def _get_output_dim(
-        self, input_N=(1, None), input_n=(1, None), input_c=(1, None)
-    ):
+        self,
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+    ) -> Tuple[
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+    ]:
         if isinstance(self.crop_start, np.ndarray) and (
             self.crop_start.ndim == 2
         ):
@@ -213,10 +256,12 @@ class Crop(_Augmentor):
         output_N = (
             (input_N[0] * self.M * crops_per_series, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M * crops_per_series)
-        )
+            else (None, input_N[1] * self.M * crops_per_series,)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.crop_size is None:
-            output_n = input_n
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.crop_size)
         return output_N, output_n, input_c
@@ -239,7 +284,12 @@ class RandomCrop(_Augmentor):
 
     """
 
-    def __init__(self, crop_size=None, crops_per_series=1, random_seed=None):
+    def __init__(
+        self,
+        crop_size: Optional[int] = None,
+        crops_per_series: int = 1,
+        random_seed: Optional[int] = None,
+    ) -> None:
         super().__init__(
             augmentor_func=random_crop,
             is_random=True,
@@ -249,11 +299,11 @@ class RandomCrop(_Augmentor):
         )
 
     @property
-    def prob(self):
+    def prob(self) -> float:
         return self._prob
 
     @prob.setter
-    def prob(self, prob):
+    def prob(self, prob: float) -> None:
         if (prob != 1.0) & (prob != 0.0):
             raise ValueError(
                 "RandomCrop augmentor may change the length of time series, "
@@ -262,39 +312,54 @@ class RandomCrop(_Augmentor):
         self._prob = prob
 
     @property
-    def crop_size(self):
+    def crop_size(self) -> int:
         return self._params["crop_size"]
 
     @crop_size.setter
-    def crop_size(self, crop_size):
+    def crop_size(self, crop_size: int) -> None:
         self._params["crop_size"] = crop_size
 
     @property
-    def crops_per_series(self):
+    def crops_per_series(self) -> int:
         return self._params["crops_per_series"]
 
     @crops_per_series.setter
-    def crops_per_series(self, crops_per_series):
+    def crops_per_series(self, crops_per_series: int) -> None:
         self._params["crops_per_series"] = crops_per_series
 
     @property
-    def random_seed(self):
+    def random_seed(self) -> int:
         return self._params["random_seed"]
 
     @random_seed.setter
-    def random_seed(self, random_seed):
+    def random_seed(self, random_seed: int) -> None:
         self._params["random_seed"] = random_seed
 
     def _get_output_dim(
-        self, input_N=(1, None), input_n=(1, None), input_c=(1, None)
-    ):
+        self,
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+    ) -> Tuple[
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+    ]:
         output_N = (
             (input_N[0] * self.M * self.crops_per_series, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M * self.crops_per_series)
-        )
+            else (None, input_N[1] * self.M * self.crops_per_series,)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.crop_size is None:
-            output_n = input_n
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.crop_size)
         return output_N, output_n, input_c

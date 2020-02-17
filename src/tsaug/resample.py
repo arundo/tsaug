@@ -1,6 +1,7 @@
 """
 Resample module
 """
+from typing import Tuple, Optional, Union
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -8,7 +9,9 @@ from .augmentor import _Augmentor
 
 
 @dimensionalize
-def resample(X, Y=None, n_new=None):
+def resample(
+    X: np.ndarray, Y: Optional[np.ndarray] = None, n_new: Optional[int] = None
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Resample from time series with new length.
 
     Time series will be transformed into new length. Values of time series is
@@ -38,7 +41,7 @@ def resample(X, Y=None, n_new=None):
 
     """
 
-    n = X.shape[1]
+    n = X.shape[1]  # type: int
 
     if (n_new is None) or (n_new == n):
         if Y is None:
@@ -46,11 +49,13 @@ def resample(X, Y=None, n_new=None):
         else:
             return X.copy(), Y.copy()
 
-    interp = np.arange(1, n_new - 1) / (n_new - 1) * (n - 1)
-    interp_inds_0 = interp.astype(int)
-    interp_inds_1 = interp_inds_0 + 1
-    interp_weight_1 = interp - interp_inds_0
-    interp_weight_0 = 1 - interp_weight_1
+    interp = (
+        np.arange(1, n_new - 1) / (n_new - 1) * (n - 1)
+    )  # type: np.ndarray
+    interp_inds_0 = interp.astype(int)  # type: np.ndarray
+    interp_inds_1 = interp_inds_0 + 1  # type: np.ndarray
+    interp_weight_1 = interp - interp_inds_0  # type: np.ndarray
+    interp_weight_0 = 1 - interp_weight_1  # type: np.ndarray
 
     X_aug = np.concatenate(
         [
@@ -60,10 +65,10 @@ def resample(X, Y=None, n_new=None):
             X[:, -1:, :],
         ],
         axis=1,
-    )
+    )  # type: np.ndarray
 
     if Y is None:
-        Y_aug = None
+        Y_aug = None  # type: Optional[np.ndarray]
     else:
         Y_aug = (
             np.concatenate(
@@ -96,15 +101,15 @@ class Resample(_Augmentor):
 
     """
 
-    def __init__(self, n_new=None):
+    def __init__(self, n_new: Optional[int] = None) -> None:
         super().__init__(augmentor_func=resample, is_random=False, n_new=n_new)
 
     @property
-    def prob(self):
+    def prob(self) -> float:
         return self._prob
 
     @prob.setter
-    def prob(self, prob):
+    def prob(self, prob: float) -> None:
         if (prob != 1.0) & (prob != 0.0):
             raise ValueError(
                 "Resample augmentor may change the length of time series, "
@@ -113,23 +118,38 @@ class Resample(_Augmentor):
         self._prob = prob
 
     @property
-    def n_new(self):
+    def n_new(self) -> Optional[int]:
         return self._params["n_new"]
 
     @n_new.setter
-    def n_new(self, n_new):
+    def n_new(self, n_new: Optional[int]) -> None:
         self._params["n_new"] = n_new
 
     def _get_output_dim(
-        self, input_N=(1, None), input_n=(1, None), input_c=(1, None)
-    ):
+        self,
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+    ) -> Tuple[
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+    ]:
         output_N = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
             else (None, input_N[1] * self.M)
-        )
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.n_new is None:
-            output_n = input_n
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.n_new)
         return output_N, output_n, input_c
