@@ -1,7 +1,7 @@
 """
 Resample module
 """
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 
 import numpy as np
 from .dimensionalize import dimensionalize
@@ -127,21 +127,29 @@ class Resample(_Augmentor):
 
     def _get_output_dim(
         self,
-        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
     ) -> Tuple[
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
     ]:
         output_N = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M)  # type: ignore
-        )  # type: Tuple[Optional[int], Optional[int]]
+            else (None, input_N[1] * self.M)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.n_new is None:
-            output_n = input_n  # type: Tuple[Optional[int], Optional[int]]
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.n_new)
         return output_N, output_n, input_c

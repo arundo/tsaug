@@ -148,14 +148,20 @@ class _Augmentor:
     def _summary(
         self,
         header: bool = True,
-        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
     ) -> Optional[
         Tuple[
-            Tuple[Optional[int], Optional[int]],
-            Tuple[Optional[int], Optional[int]],
-            Tuple[Optional[int], Optional[int]],
+            Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+            Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+            Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
         ]
     ]:
         if header:
@@ -190,13 +196,19 @@ class _Augmentor:
 
     def _get_output_dim(
         self,
-        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
     ) -> Tuple[
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
     ]:
         """
         Get output dimensions from input dimensions
@@ -213,8 +225,8 @@ class _Augmentor:
         output_N = (
             (input_N[0] * self.M, None)
             if (input_N[0] is not None)
-            else (None, input_N[1] * self.M)  # type: ignore
-        )  # type: Tuple[Optional[int], Optional[int]]
+            else (None, input_N[1] * self.M)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         return output_N, input_n, input_c
 
 

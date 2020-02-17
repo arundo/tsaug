@@ -233,13 +233,19 @@ class Crop(_Augmentor):
 
     def _get_output_dim(
         self,
-        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
     ) -> Tuple[
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
     ]:
         if isinstance(self.crop_start, np.ndarray) and (
             self.crop_start.ndim == 2
@@ -250,13 +256,12 @@ class Crop(_Augmentor):
         output_N = (
             (input_N[0] * self.M * crops_per_series, None)
             if (input_N[0] is not None)
-            else (
-                None,
-                input_N[1] * self.M * crops_per_series,  # type: ignore
-            )  # TODO: fix None * int issue here
-        )
+            else (None, input_N[1] * self.M * crops_per_series,)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.crop_size is None:
-            output_n = input_n
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.crop_size)
         return output_N, output_n, input_c
@@ -332,24 +337,29 @@ class RandomCrop(_Augmentor):
 
     def _get_output_dim(
         self,
-        input_N: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_n: Tuple[Optional[int], Optional[int]] = (1, None),
-        input_c: Tuple[Optional[int], Optional[int]] = (1, None),
+        input_N: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_n: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
+        input_c: Union[
+            Tuple[int, Optional[int]], Tuple[Optional[int], int]
+        ] = (1, None),
     ) -> Tuple[
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
-        Tuple[Optional[int], Optional[int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
+        Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]],
     ]:
         output_N = (
             (input_N[0] * self.M * self.crops_per_series, None)
             if (input_N[0] is not None)
-            else (
-                None,
-                input_N[1] * self.M * self.crops_per_series,  # type: ignore
-            )  # TODO: fix None * int issue here
-        )
+            else (None, input_N[1] * self.M * self.crops_per_series,)
+        )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         if self.crop_size is None:
-            output_n = input_n
+            output_n = (
+                input_n
+            )  # type: Union[Tuple[int, Optional[int]], Tuple[Optional[int], int]]
         else:
             output_n = (None, self.crop_size)
         return output_N, output_n, input_c
