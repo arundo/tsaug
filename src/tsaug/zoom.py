@@ -91,6 +91,7 @@ def magnify(
                 Y_zoom = None  # type: Optional[np.ndarray]
             else:
                 Y_zoom = np.zeros((N, n, cl))
+            # if the windows to be magnified have different sizes across the input, we run over each size
             for size, count in counter.items():
                 if (Y is None) or (Y_zoom is None):
                     X_zoom[sizes == size, :, :] = magnify(
