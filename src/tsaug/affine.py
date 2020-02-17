@@ -148,7 +148,7 @@ def random_affine(
     n = 0  # type: int
     c = 0  # type: int
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    rand = np.random.RandomState(random_seed)
     a = rand.uniform(low=min_a, high=max_a, size=(N, c))  # type: np.ndarray
     b = rand.uniform(low=min_b, high=max_b, size=(N, c))  # type: np.ndarray
 

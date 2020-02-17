@@ -164,7 +164,7 @@ def random_magnify(
     n = 0  # type: int
     c = 0  # type: int
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    rand = np.random.RandomState(random_seed)
 
     if (max_zoom < 1.0) or (min_zoom < 1.0):
         raise ValueError("Zooming factor must be at least 1.0.")

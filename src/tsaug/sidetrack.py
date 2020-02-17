@@ -92,7 +92,7 @@ def random_sidetrack(
     n = 0  # type: int
     c = 0  # type: int
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    rand = np.random.RandomState(random_seed)
     M = (
         np.cumsum(
             rand.normal(size=X.shape, loc=step_mu, scale=step_sigma), axis=1

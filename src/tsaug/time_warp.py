@@ -57,7 +57,7 @@ def random_time_warp(
     if Y is not None:
         cl = Y.shape[2]  # type: int
 
-    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    rand = np.random.RandomState(random_seed)
 
     anchors = np.arange(
         0.5 / n_speed_change, 1, 1 / n_speed_change

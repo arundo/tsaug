@@ -56,7 +56,7 @@ def random_jitter(
     n = 0  # type: int
     c = 0  # type: int
     N, n, c = X.shape
-    rand = np.random.RandomState(random_seed)  # type: ignore # Not sure what type we need here
+    rand = np.random.RandomState(random_seed)
     scale = strength * np.stack(
         [np.percentile(X, q=95, axis=1) - np.percentile(X, q=5, axis=1)] * n,
         axis=1,
