@@ -76,14 +76,14 @@ def cross_sum(
             X_aug[np.isnan(inds[:, k]) >= 0]
             + X[inds[np.isnan(inds[:, k]) >= 0, k]]
         )
-        if Y is not None:
-            Y_aug[np.isnan(inds[:, k]) >= 0] = (  # type: ignore
-                Y_aug[np.isnan(inds[:, k]) >= 0]  # type: ignore
+        if (Y_aug is not None) and (Y is not None):
+            Y_aug[np.isnan(inds[:, k]) >= 0] = (
+                Y_aug[np.isnan(inds[:, k]) >= 0]
                 + Y[inds[np.isnan(inds[:, k]) >= 0, k]]
             )
 
-    if Y is not None:
-        Y_aug = (Y_aug >= 1).astype(int)  # type: ignore
+    if Y_aug is not None:
+        Y_aug = (Y_aug >= 1).astype(int)
 
     return X_aug, Y_aug
 
