@@ -2,7 +2,7 @@
 Release History
 ***************
 
-Version 0.1.1 (Feb 17, 2020)
+Version 0.1.1 (Feb 18, 2020)
 ===================================
 - Added type hints
 - Fixed a few minor bugs
