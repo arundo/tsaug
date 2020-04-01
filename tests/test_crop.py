@@ -1,4 +1,5 @@
 import numpy as np
+
 from tsaug import Crop, RandomCrop
 
 
@@ -62,4 +63,3 @@ def test_random_crop_X3():
     assert (abs(X_crops[3:]) >= 100).all()
     assert (np.diff(X_crops[:, :, 0], axis=1) == 1).all()
     assert (np.diff(X_crops[:, :, 1], axis=1) == -1).all()
-
