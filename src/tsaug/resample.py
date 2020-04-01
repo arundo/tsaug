@@ -1,11 +1,12 @@
 """
 Resample module
 """
-from typing import Tuple, Optional, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
-from .dimensionalize import dimensionalize
+
 from .augmentor import _Augmentor
+from .dimensionalize import dimensionalize
 
 
 @dimensionalize

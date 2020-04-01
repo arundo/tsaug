@@ -1,12 +1,13 @@
 """
 Time warping module
 """
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 import numpy as np
-from scipy.interpolate import interp1d, PchipInterpolator
-from .dimensionalize import dimensionalize
+from scipy.interpolate import PchipInterpolator, interp1d
+
 from .augmentor import _Augmentor
+from .dimensionalize import dimensionalize
 
 
 @dimensionalize

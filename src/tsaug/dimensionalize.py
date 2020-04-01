@@ -1,8 +1,8 @@
 """
 decorator of dimensionalize X and Y input
 """
-from typing import Callable, Optional, Tuple, Any, Union
 from functools import wraps
+from typing import Any, Callable, Optional, Tuple, Union
 
 import numpy as np
 
