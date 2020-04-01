@@ -1,12 +1,12 @@
 """
 Reverse module
 """
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 import numpy as np
 
-from .dimensionalize import dimensionalize
 from .augmentor import _Augmentor
+from .dimensionalize import dimensionalize
 
 
 @dimensionalize

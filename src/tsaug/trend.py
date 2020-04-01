@@ -1,12 +1,13 @@
 """
 Add trend
 """
-from typing import Tuple, Optional, Callable
+from typing import Callable, Optional, Tuple
 
 import numpy as np
 from scipy.interpolate import CubicSpline
-from .dimensionalize import dimensionalize
+
 from .augmentor import _Augmentor
+from .dimensionalize import dimensionalize
 
 
 @dimensionalize

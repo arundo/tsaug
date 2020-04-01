@@ -28,13 +28,13 @@ See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 #
 __version__ = "0.1.1"
 
-from .time_warp import random_time_warp, RandomTimeWarp
-from .zoom import magnify, random_magnify, Magnify, RandomMagnify
-from .sidetrack import random_sidetrack, RandomSidetrack
-from .resample import resample, Resample
-from .jitter import random_jitter, RandomJitter
-from .crop import crop, random_crop, Crop, RandomCrop
-from .affine import affine, random_affine, Affine, RandomAffine
-from .reverse import reverse, Reverse
-from .cross_sum import cross_sum, random_cross_sum, CrossSum, RandomCrossSum
-from .trend import trend, random_trend, Trend, RandomTrend
+from .affine import Affine, RandomAffine, affine, random_affine
+from .crop import Crop, RandomCrop, crop, random_crop
+from .cross_sum import CrossSum, RandomCrossSum, cross_sum, random_cross_sum
+from .jitter import RandomJitter, random_jitter
+from .resample import Resample, resample
+from .reverse import Reverse, reverse
+from .sidetrack import RandomSidetrack, random_sidetrack
+from .time_warp import RandomTimeWarp, random_time_warp
+from .trend import RandomTrend, Trend, random_trend, trend
+from .zoom import Magnify, RandomMagnify, magnify, random_magnify

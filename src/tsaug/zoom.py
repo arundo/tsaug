@@ -1,14 +1,15 @@
 """
 magnify
 """
-from typing import Tuple, Optional, Union, Mapping
-
 from collections import Counter
+from typing import Mapping, Optional, Tuple, Union
+
 import numpy as np
-from .dimensionalize import dimensionalize
-from .crop import crop
-from .resample import resample
+
 from .augmentor import _Augmentor
+from .crop import crop
+from .dimensionalize import dimensionalize
+from .resample import resample
 
 
 @dimensionalize
