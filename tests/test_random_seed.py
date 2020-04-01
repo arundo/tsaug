@@ -1,13 +1,14 @@
-import pytest
 import numpy as np
+import pytest
+
 from tsaug import (
     RandomAffine,
     RandomCrop,
-    RandomJitter,
-    RandomTimeWarp,
-    RandomSidetrack,
-    RandomMagnify,
     RandomCrossSum,
+    RandomJitter,
+    RandomMagnify,
+    RandomSidetrack,
+    RandomTimeWarp,
     RandomTrend,
 )
 

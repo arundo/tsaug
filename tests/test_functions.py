@@ -2,24 +2,25 @@
 Test all public augmentor with its default parameters
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from tsaug import (
+    affine,
     crop,
-    random_crop,
-    random_jitter,
-    random_time_warp,
-    resample,
+    cross_sum,
     magnify,
+    random_affine,
+    random_crop,
+    random_cross_sum,
+    random_jitter,
     random_magnify,
     random_sidetrack,
-    affine,
-    random_affine,
-    reverse,
-    cross_sum,
-    random_cross_sum,
-    trend,
+    random_time_warp,
     random_trend,
+    resample,
+    reverse,
+    trend,
 )
 
 augmentors = [

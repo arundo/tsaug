@@ -2,8 +2,9 @@
 Unit tests of anomaly adder
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from tsaug import resample
 
 
@@ -54,4 +55,3 @@ def test_resample_3D():
     )
     X_aug = X_aug.round(decimals=12)
     assert (X_aug == X_aug_true).all()
-

@@ -1,21 +1,22 @@
-import pytest
 import numpy as np
+import pytest
+
 from tsaug import (
     Affine,
-    RandomAffine,
     Crop,
-    RandomCrop,
-    RandomJitter,
-    Resample,
-    RandomTimeWarp,
-    RandomSidetrack,
-    Magnify,
-    RandomMagnify,
-    Reverse,
     CrossSum,
+    Magnify,
+    RandomAffine,
+    RandomCrop,
     RandomCrossSum,
-    Trend,
+    RandomJitter,
+    RandomMagnify,
+    RandomSidetrack,
+    RandomTimeWarp,
     RandomTrend,
+    Resample,
+    Reverse,
+    Trend,
 )
 
 rand = np.random.RandomState(123)
