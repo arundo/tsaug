@@ -14,9 +14,7 @@ import numpy as np
 __all__ = ["plot"]
 
 
-def plot(
-    X, Y=None, Ypred=None, f=None, ax=None, global_ylim=False, saveas=None
-):
+def plot(X, Y=None, f=None, ax=None, global_ylim=False, saveas=None):
     """
     Plot time series
 
@@ -30,12 +28,6 @@ def plot(
             time points are represented by 0, while anomalies are 1. If it is
             N*n matrix, different types of anomalies may also be represented
             by different positive integers.
-        Ypred (numpy array): Predicted anomaly labels, N*n or N*n*L matrix.
-            Each row represents a series, each column represents a time point,
-            and the third dimension (if exists) represents types of anomalies.
-            Normal time points are represented by 0, while anomalies are 1. If
-            it is N*n matrix, different types of anomalies may also be
-            represented by different positive integers.
         f (matplotlib figure object): Figure to plot at. If not given, a figure
             object will be created. Default: None
         ax (matplotlib axes object or list of axes objects): Axes to plot
@@ -53,8 +45,6 @@ def plot(
 
     if Y is not None:
         Y = np.round(np.clip(Y, 0, 1))
-    if Ypred is not None:
-        Ypred = np.round(np.clip(Ypred, 0, 1))
 
     classes = {0, 1}
     if Y is not None:
@@ -63,12 +53,6 @@ def plot(
         if Y.ndim == 2:
             classes = classes.union(set(list(np.unique(Y))))
 
-    if Ypred is not None:
-        if Ypred.ndim == 1:
-            Ypred = Ypred.reshape(1, -1)
-        if Ypred.ndim == 2:
-            classes = classes.union(set(list(np.unique(Ypred))))
-
     if len(classes) > 0:
         classes.remove(0)
 
@@ -76,17 +60,9 @@ def plot(
         if Y.ndim == 2:
             Y = np.stack([(Y == cl).astype(int) for cl in classes], axis=2)
         num_classes = Y.shape[2]
-    if Ypred is not None:
-        if Ypred.ndim == 2:
-            Ypred = np.stack(
-                [(Ypred == cl).astype(int) for cl in classes], axis=2
-            )
-        num_classes = Ypred.shape[2]
 
     if Y is None:
         Y = [None] * len(X)
-    if Ypred is None:
-        Ypred = [None] * len(X)
 
     if ax is None:
         if f is None:
@@ -117,11 +93,11 @@ def plot(
             ylim[1] + (ylim[1] - ylim[0]) / 20,
         )
     counter = 0
-    for Xk, Yk, Ypredk in zip(X, Y, Ypred):
+    for Xk, Yk in zip(X, Y):
         ax[counter].plot(Xk)
         if global_ylim:
             ax[counter].set_ylim(ylim[0], ylim[1])
-        if (Yk is None) & (Ypredk is None):
+        if Yk is None:
             counter += 1
             continue
         for clcounter in range(num_classes):
@@ -133,26 +109,9 @@ def plot(
                     ax[counter].axvspan(
                         anomaly_window[0],
                         anomaly_window[1],
-                        alpha=0.5,
-                        hatch=(None if num_classes == 1 else "."),
+                        alpha=0.4,
                         color=(
                             "r"
-                            if num_classes == 1
-                            else clcolors[clcounter % 10]
-                        ),
-                    )
-            if Ypredk is not None:
-                anomaly_windows = _get_anomaly_windows(
-                    Ypredk[:, clcounter].astype(int)
-                )
-                for anomaly_window in anomaly_windows:
-                    ax[counter].axvspan(
-                        anomaly_window[0],
-                        anomaly_window[1],
-                        alpha=0.5,
-                        hatch=(None if num_classes == 1 else "/"),
-                        color=(
-                            "g"
                             if num_classes == 1
                             else clcolors[clcounter % 10]
                         ),
