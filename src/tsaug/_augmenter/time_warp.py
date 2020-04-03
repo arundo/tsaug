@@ -5,9 +5,9 @@ from .base import _Augmentor
 
 
 class TimeWarp(_Augmentor):
-    def __init__(self, n_speed_change=3, repeat=1, prob=1.0, seed=None):
+    def __init__(self, n_speed_change=3, repeats=1, prob=1.0, seed=None):
         self.n_speed_change = n_speed_change
-        super().__init__(repeat=repeat, prob=prob, seed=seed)
+        super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @staticmethod
     def _change_series_length():

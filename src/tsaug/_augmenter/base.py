@@ -6,22 +6,22 @@ import numpy as np
 
 class _Augmentor(ABC):
     def __init__(
-        self, repeat: int = 1, prob: float = 1.0, seed: Optional[int] = None
+        self, repeats: int = 1, prob: float = 1.0, seed: Optional[int] = None
     ) -> None:
-        self.repeat = repeat
+        self.repeats = repeats
         self.prob = prob
         self.seed = seed
 
     @property
-    def repeat(self) -> int:
+    def repeats(self) -> int:
         return self._repeat
 
-    @repeat.setter
-    def repeat(self, M: int) -> None:
+    @repeats.setter
+    def repeats(self, M: int) -> None:
         if not isinstance(M, int):
-            raise TypeError("Parameter `repeat` must be a positive integer.")
+            raise TypeError("Parameter `repeats` must be a positive integer.")
         if M <= 0:
-            raise ValueError("Parameter `repeat` must be a positive integer.")
+            raise ValueError("Parameter `repeats` must be a positive integer.")
         self._repeat = M
 
     @property
@@ -79,7 +79,7 @@ class _Augmentor(ABC):
         # different length
         if (
             self._change_series_length()
-            and ((self.repeat > 1) or (N > 1))
+            and ((self.repeats > 1) or (N > 1))
             and (self.prob != 1.0)
         ):
             raise RuntimeError(
@@ -90,7 +90,7 @@ class _Augmentor(ABC):
             )
 
         # augment
-        if self.repeat == 1:
+        if self.repeats == 1:
             X_aug, Y_aug = self._augment_once(X, Y)
         else:
             X_aug, Y_aug = self._augment_repeat(X, Y)
@@ -108,7 +108,7 @@ class _Augmentor(ABC):
 
     def _augment_repeat(self, X, Y):
         """
-        By default, if `repeat` > 1, we first concatenate `repeat` copies of
+        By default, if `repeats` > 1, we first concatenate `repeats` copies of
         input into a 'super' input, and then apply _augment_once to it. The
         problem of this strategy is that the memory burden may be unnecessarily
         high for 'long-to-short' augmentation like cropping. In that case, the
@@ -117,14 +117,14 @@ class _Augmentor(ABC):
         rand = np.random.RandomState(self.seed)
         N = len(X)
         ind = (
-            rand.uniform(size=self.repeat * N) <= self.prob
+            rand.uniform(size=self.repeats * N) <= self.prob
         )  # indice of series to be augmented
         if Y is None:
-            X_aug = np.vstack([X.copy()] * self.repeat)
+            X_aug = np.vstack([X.copy()] * self.repeats)
             X_aug[ind, :], Y_aug = self._augment_once(X_aug[ind, :], None)
         else:
-            X_aug = np.vstack([X.copy()] * self.repeat)
-            Y_aug = np.vstack([Y.copy()] * self.repeat)
+            X_aug = np.vstack([X.copy()] * self.repeats)
+            Y_aug = np.vstack([Y.copy()] * self.repeats)
             X_aug[ind, :], Y_aug[ind, :] = self._augment_once(
                 X_aug[ind, :], Y_aug[ind, :]
             )
