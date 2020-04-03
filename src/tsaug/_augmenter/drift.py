@@ -39,6 +39,10 @@ class Drift(_Augmentor):
             if isinstance(v, tuple):
                 if len(v) != 2:
                     raise ValueError(MAX_DRIFT_ERROR_MSG)
+                if (not isinstance(v[0], (float, int))) or (
+                    not isinstance(v[1], (float, int))
+                ):
+                    raise TypeError(MAX_DRIFT_ERROR_MSG)
                 if v[0] > v[1]:
                     raise ValueError(MAX_DRIFT_ERROR_MSG)
                 if (v[0] < 0.0) or (v[1] < 0.0):
