@@ -31,7 +31,7 @@ class Quantize(_Augmentor):
     def n_levels(self, n):
         N_LEVELS_ERROR_MSG = (
             "Parameter `n_levels` must be a positive integer, "
-            "a 2-tuple of positive integer representing an interval, "
+            "a 2-tuple of positive integers representing an interval, "
             "or a list of positive integers."
         )
         if not isinstance(n, int):
