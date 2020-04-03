@@ -13,4 +13,6 @@ See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 __version__ = "0.2"
 
 from ._augmenter.crop import Crop
+from ._augmenter.drift import Drift
+from ._augmenter.reverse import Reverse
 from ._augmenter.time_warp import TimeWarp

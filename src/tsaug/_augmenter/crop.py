@@ -24,7 +24,7 @@ class Crop(_Augmentor):
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
 
-    def _augment_once(self, X, Y=None):
+    def _augment_once(self, X, Y):
         N, T, _ = X.shape
         rand = np.random.RandomState(self.seed)
         size = max(
@@ -56,7 +56,7 @@ class Crop(_Augmentor):
 
         return X_aug, Y_aug
 
-    def _augment_repeat(self, X, Y=None):
+    def _augment_repeat(self, X, Y):
         """
         Overwrite the memory-expensive base method.
         Repeat mode is handle by _augment_once
