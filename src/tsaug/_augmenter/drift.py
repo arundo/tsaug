@@ -11,6 +11,7 @@ class Drift(_Augmentor):
         n_drift_points=3,
         kind="additive",
         per_channel=True,
+        normalize=True,
         repeats=1,
         prob=1.0,
         seed=None,
@@ -19,6 +20,7 @@ class Drift(_Augmentor):
         self.n_drift_points = n_drift_points
         self.kind = kind
         self.per_channel = per_channel
+        self.normalize = normalize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @staticmethod
@@ -88,6 +90,16 @@ class Drift(_Augmentor):
         self._per_channel = p
 
     @property
+    def normalize(self):
+        return self._normalize
+
+    @normalize.setter
+    def normalize(self, p):
+        if not isinstance(p, bool):
+            raise TypeError("Paremeter `normalize` must be boolean.")
+        self._normalize = p
+
+    @property
     def kind(self):
         return self._kind
 
@@ -138,7 +150,12 @@ class Drift(_Augmentor):
             )
 
         if self.kind == "additive":
-            X_aug = X + drift * abs(X).max(axis=1, keepdims=True)
+            if self.normalize:
+                X_aug = X + drift * (
+                    X.max(axis=1, keepdims=True) - X.min(axis=1, keepdims=True)
+                )
+            else:
+                X_aug = X + drift
         else:
             X_aug = X * (1 + drift)
 
