@@ -10,6 +10,7 @@ class Drift(_Augmentor):
         max_drift=0.5,
         n_drift_points=3,
         kind="additive",
+        per_channel=True,
         repeat=1,
         prob=1.0,
         seed=None,
@@ -17,6 +18,7 @@ class Drift(_Augmentor):
         self.max_drift = max_drift
         self.n_drift_points = n_drift_points
         self.kind = kind
+        self.per_channel = per_channel
         super().__init__(repeat=repeat, prob=prob, seed=seed)
 
     @staticmethod
@@ -56,6 +58,16 @@ class Drift(_Augmentor):
         self._n_drift_points = n
 
     @property
+    def per_channel(self):
+        return self._per_channel
+
+    @per_channel.setter
+    def per_channel(self, p):
+        if not isinstance(p, bool):
+            raise TypeError("Paremeter `per_channel` must be boolean.")
+        self._per_channel = p
+
+    @property
     def kind(self):
         return self._kind
 
@@ -74,16 +86,21 @@ class Drift(_Augmentor):
     def _augment_once(self, X, Y):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
-        anchors = np.cumsum(
-            rand.normal(size=(N, self.n_drift_points + 2, C)), axis=1
-        )  # type: np.ndarray
+        if self.per_channel:
+            anchors = np.cumsum(
+                rand.normal(size=(N, self.n_drift_points + 2, C)), axis=1
+            )  # type: np.ndarray
+        else:
+            anchors = np.cumsum(
+                rand.normal(size=(N, self.n_drift_points + 2, 1)), axis=1
+            )
 
         interpFuncs = CubicSpline(
             np.linspace(0, T, self.n_drift_points + 2), anchors, axis=1
         )  # type: Callable
 
         drift = interpFuncs(np.arange(T))
-        drift = drift - drift[:, 0, :].reshape(N, 1, C)
+        drift = drift - drift[:, 0, :].reshape(N, 1, -1)
         drift = drift / abs(drift).max(axis=1, keepdims=True) * self.max_drift
 
         if self.kind == "additive":
