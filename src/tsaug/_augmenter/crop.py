@@ -4,9 +4,9 @@ from .base import _Augmentor
 
 
 class Crop(_Augmentor):
-    def __init__(self, size=None, repeat=1, prob=1.0, seed=None):
+    def __init__(self, size=None, repeats=1, prob=1.0, seed=None):
         self.size = size
-        super().__init__(repeat=repeat, prob=prob, seed=seed)
+        super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @staticmethod
     def _change_series_length():
@@ -30,29 +30,29 @@ class Crop(_Augmentor):
         size = max(
             1, min(T, self.size if (self.size is not None) else int(T / 2))
         )
-        crop_start = rand.choice(T - size + 1, size=(N, self.repeat))
+        crop_start = rand.choice(T - size + 1, size=(N, self.repeats))
         X_aug = X[
-            np.hstack([i * np.ones(self.repeat * size) for i in range(N)])
-            .reshape(N, self.repeat, size)
+            np.hstack([i * np.ones(self.repeats * size) for i in range(N)])
+            .reshape(N, self.repeats, size)
             .astype(int),
             np.stack([crop_start + i for i in range(size)], axis=2).astype(
                 int
             ),
             :,
-        ].reshape((N * self.repeat, size, -1))
+        ].reshape((N * self.repeats, size, -1))
 
         if Y is None:
             Y_aug = None
         else:
             Y_aug = Y[
-                np.hstack([i * np.ones(self.repeat * size) for i in range(N)])
-                .reshape(N, self.repeat, size)
+                np.hstack([i * np.ones(self.repeats * size) for i in range(N)])
+                .reshape(N, self.repeats, size)
                 .astype(int),
                 np.stack([crop_start + i for i in range(size)], axis=2).astype(
                     int
                 ),
                 :,
-            ].reshape((N * self.repeat, size, -1))
+            ].reshape((N * self.repeats, size, -1))
 
         return X_aug, Y_aug
 

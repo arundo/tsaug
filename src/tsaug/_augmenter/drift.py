@@ -11,7 +11,7 @@ class Drift(_Augmentor):
         n_drift_points=3,
         kind="additive",
         per_channel=True,
-        repeat=1,
+        repeats=1,
         prob=1.0,
         seed=None,
     ):
@@ -19,7 +19,7 @@ class Drift(_Augmentor):
         self.n_drift_points = n_drift_points
         self.kind = kind
         self.per_channel = per_channel
-        super().__init__(repeat=repeat, prob=prob, seed=seed)
+        super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @staticmethod
     def _change_series_length():
