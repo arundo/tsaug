@@ -55,14 +55,22 @@ class Drift(_Augmentor):
 
     @n_drift_points.setter
     def n_drift_points(self, n):
-        if not isinstance(n, (float, int)):
-            raise TypeError(
-                "Parameter `n_drift_points` must be a positive integer."
-            )
-        if n < 0:
-            raise ValueError(
-                "Parameter `n_drift_points` must be a positive integer."
-            )
+        N_DRIFT_POINTS_ERROR_MSG = (
+            "Parameter `n_drift_points` must be a positive integer "
+            "or a list of positive integers."
+        )
+        if not isinstance(n, int):
+            if isinstance(n, list):
+                if len(n) == 0:
+                    raise ValueError(N_DRIFT_POINTS_ERROR_MSG)
+                if not all([isinstance(nn, int) for nn in n]):
+                    raise TypeError(N_DRIFT_POINTS_ERROR_MSG)
+                if not all([nn > 0 for nn in n]):
+                    raise ValueError(N_DRIFT_POINTS_ERROR_MSG)
+            else:
+                raise TypeError(N_DRIFT_POINTS_ERROR_MSG)
+        elif n <= 0:
+            raise ValueError(N_DRIFT_POINTS_ERROR_MSG)
         self._n_drift_points = n
 
     @property
@@ -95,18 +103,25 @@ class Drift(_Augmentor):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
 
-        anchors = np.cumsum(
-            rand.normal(
-                size=(N, self.n_drift_points + 2, C if self.per_channel else 1)
-            ),
-            axis=1,
-        )  # type: np.ndarray
+        if isinstance(self.n_drift_points, int):
+            n_drift_points = set([self.n_drift_points])
+        else:
+            n_drift_points = set(self.n_drift_points)
 
-        interpFuncs = CubicSpline(
-            np.linspace(0, T, self.n_drift_points + 2), anchors, axis=1
-        )  # type: Callable
+        ind = rand.choice(
+            len(n_drift_points), N * (C if self.per_channel else 1)
+        )  # map series to n_drift_points
 
-        drift = interpFuncs(np.arange(T))
+        drift = np.zeros((N * (C if self.per_channel else 1), T))
+        for i, n in enumerate(n_drift_points):
+            anchors = np.cumsum(
+                rand.normal(size=((ind == i).sum(), n + 2)), axis=1
+            )  # type: np.ndarray
+            interpFuncs = CubicSpline(
+                np.linspace(0, T, n + 2), anchors, axis=1
+            )  # type: Callable
+            drift[ind == i, :] = interpFuncs(np.arange(T))
+        drift = drift.reshape((N, -1, T)).swapaxes(1, 2)
         drift = drift - drift[:, 0, :].reshape(N, 1, -1)
         drift = drift / abs(drift).max(axis=1, keepdims=True)
         if isinstance(self.max_drift, (float, int)):
