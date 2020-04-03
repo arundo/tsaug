@@ -31,14 +31,22 @@ class Drift(_Augmentor):
 
     @max_drift.setter
     def max_drift(self, v):
+        MAX_DRIFT_ERROR_MSG = (
+            "Parameter `max_drift` must be a non-negative number "
+            "or a 2-tuple of non-negative numbers representing an interval. "
+        )
         if not isinstance(v, (float, int)):
-            raise TypeError(
-                "Parameter `max_drift` must be a non-negative number."
-            )
-        if v < 0:
-            raise ValueError(
-                "Parameter `max_drift` must be a non-negative number."
-            )
+            if isinstance(v, tuple):
+                if len(v) != 2:
+                    raise ValueError(MAX_DRIFT_ERROR_MSG)
+                if v[0] > v[1]:
+                    raise ValueError(MAX_DRIFT_ERROR_MSG)
+                if (v[0] < 0.0) or (v[1] < 0.0):
+                    raise ValueError(MAX_DRIFT_ERROR_MSG)
+            else:
+                raise TypeError(MAX_DRIFT_ERROR_MSG)
+        elif v < 0.0:
+            raise ValueError(MAX_DRIFT_ERROR_MSG)
         self._max_drift = v
 
     @property
@@ -86,14 +94,13 @@ class Drift(_Augmentor):
     def _augment_once(self, X, Y):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
-        if self.per_channel:
-            anchors = np.cumsum(
-                rand.normal(size=(N, self.n_drift_points + 2, C)), axis=1
-            )  # type: np.ndarray
-        else:
-            anchors = np.cumsum(
-                rand.normal(size=(N, self.n_drift_points + 2, 1)), axis=1
-            )
+
+        anchors = np.cumsum(
+            rand.normal(
+                size=(N, self.n_drift_points + 2, C if self.per_channel else 1)
+            ),
+            axis=1,
+        )  # type: np.ndarray
 
         interpFuncs = CubicSpline(
             np.linspace(0, T, self.n_drift_points + 2), anchors, axis=1
@@ -101,7 +108,15 @@ class Drift(_Augmentor):
 
         drift = interpFuncs(np.arange(T))
         drift = drift - drift[:, 0, :].reshape(N, 1, -1)
-        drift = drift / abs(drift).max(axis=1, keepdims=True) * self.max_drift
+        drift = drift / abs(drift).max(axis=1, keepdims=True)
+        if isinstance(self.max_drift, (float, int)):
+            drift = drift * self.max_drift
+        else:
+            drift = drift * rand.uniform(
+                low=self.max_drift[0],
+                high=self.max_drift[1],
+                size=(N, 1, C if self.per_channel else 1),
+            )
 
         if self.kind == "additive":
             X_aug = X + drift * abs(X).max(axis=1, keepdims=True)
