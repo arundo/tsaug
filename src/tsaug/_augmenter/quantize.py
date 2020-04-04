@@ -80,7 +80,7 @@ class Quantize(_Augmentor):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         rand = np.random.RandomState(self.seed)
         N, T, C = X.shape
 

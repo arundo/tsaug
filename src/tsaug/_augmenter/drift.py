@@ -115,7 +115,7 @@ class Drift(_Augmentor):
             )
         self._kind = k
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
 

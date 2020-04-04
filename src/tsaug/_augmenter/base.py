@@ -90,10 +90,7 @@ class _Augmentor(ABC):
             )
 
         # augment
-        if self.repeats == 1:
-            X_aug, Y_aug = self._augment_once(X, Y)
-        else:
-            X_aug, Y_aug = self._augment_repeat(X, Y)
+        X_aug, Y_aug = self._augment(X, Y)
 
         # TODO: reshape X_aug, Y_aug
 
@@ -103,16 +100,36 @@ class _Augmentor(ABC):
             return X_aug, Y_aug
 
     @abstractmethod
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
+        """
+        The core of augmentation.
+        """
         pass
 
-    def _augment_repeat(self, X, Y):
+    def _augment(self, X, Y):
         """
-        By default, if `repeats` > 1, we first concatenate `repeats` copies of
-        input into a 'super' input, and then apply _augment_once to it. The
-        problem of this strategy is that the memory burden may be unnecessarily
-        high for 'long-to-short' augmentation like cropping. In that case, the
-        augmentor should overwrite this method.
+        The main part of augmentation, without pre- and post-processing.
+
+        This method calls _augment_core which is the core algorithmic part. The
+        process in this method handles `repeats` and `prob`.
+
+        1. If `repeats` > 1, we first concatenate `repeats` copies of input
+           into a 'super' input..
+        2. Select series from the (super) input to be augmented.
+        3. Apply _augment_core to the selected series.
+
+        The problem of this strategy includes:
+
+        1. The memory burden may be unnecessarily high for 'long-to-short'
+           augmentation like cropping (say if cropping a 100-window from a
+           100M-series, this strategy copies 100M-series `repeats` times).
+        2. Some time-consuming computation may be duplicated, for example
+           quantization with kmeans. Each series should only train a model once
+           instead of `repeats` times.
+
+        In those cases, the subclass of the augmentor should overwrite this
+        method.
+
         """
         rand = np.random.RandomState(self.seed)
         N = len(X)
@@ -120,12 +137,19 @@ class _Augmentor(ABC):
             rand.uniform(size=self.repeats * N) <= self.prob
         )  # indice of series to be augmented
         if Y is None:
-            X_aug = np.vstack([X.copy()] * self.repeats)
-            X_aug[ind, :], Y_aug = self._augment_once(X_aug[ind, :], None)
+            if self.repeats > 1:
+                X_aug = np.vstack([X.copy()] * self.repeats)
+            else:
+                X_aug = X.copy()
+            X_aug[ind, :], Y_aug = self._augment_core(X_aug[ind, :], None)
         else:
-            X_aug = np.vstack([X.copy()] * self.repeats)
-            Y_aug = np.vstack([Y.copy()] * self.repeats)
-            X_aug[ind, :], Y_aug[ind, :] = self._augment_once(
+            if self.repeats > 1:
+                X_aug = np.vstack([X.copy()] * self.repeats)
+                Y_aug = np.vstack([Y.copy()] * self.repeats)
+            else:
+                X_aug = X.copy()
+                Y_aug = Y.copy()
+            X_aug[ind, :], Y_aug[ind, :] = self._augment_core(
                 X_aug[ind, :], Y_aug[ind, :]
             )
 

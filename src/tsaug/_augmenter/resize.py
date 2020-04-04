@@ -24,7 +24,7 @@ class Resize(_Augmentor):
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         _, T, _ = X.shape
         ind = np.arange(self.size - 1) / (self.size - 1) * (T - 1)
         ind_0 = ind.astype(int)
@@ -47,3 +47,6 @@ class Resize(_Augmentor):
             Y_aug = Y_aug.round().astype(int)
 
         return X_aug, Y_aug
+
+    # def _augment_repeat(self, X, Y):
+    #     return n
