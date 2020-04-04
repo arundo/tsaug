@@ -81,7 +81,7 @@ class Convolve(_Augmentor):
                     raise ValueError(SIZE_ERROR_MSG)
                 if (not isinstance(n[0], int)) or (not isinstance(n[1], int)):
                     raise TypeError(SIZE_ERROR_MSG)
-                if n[0] > n[1]:
+                if n[0] >= n[1]:
                     raise ValueError(SIZE_ERROR_MSG)
                 if (n[0] <= 0) or (n[1] <= 0):
                     raise ValueError(SIZE_ERROR_MSG)
