@@ -17,5 +17,6 @@ from ._augmenter.convolve import Convolve
 from ._augmenter.crop import Crop
 from ._augmenter.drift import Drift
 from ._augmenter.quantize import Quantize
+from ._augmenter.resize import Resize
 from ._augmenter.reverse import Reverse
 from ._augmenter.time_warp import TimeWarp
