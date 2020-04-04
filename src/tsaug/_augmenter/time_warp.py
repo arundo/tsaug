@@ -29,7 +29,7 @@ class TimeWarp(_Augmentor):
             )
         self._n_speed_change = n
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         rand = np.random.RandomState(self.seed)
         N, T, C = X.shape
         if Y is not None:

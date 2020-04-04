@@ -146,7 +146,7 @@ class AddNoise(_Augmentor):
             raise TypeError("Paremeter `normalize` must be boolean.")
         self._normalize = p
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
         if self.distr == "gaussian":

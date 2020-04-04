@@ -24,7 +24,14 @@ class Crop(_Augmentor):
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
+        "Method _augment is overwritten, therefore this method is not needed."
+        pass
+
+    def _augment(self, X, Y):
+        """
+        Overwrite the memory-expensive base method.
+        """
         N, T, _ = X.shape
         rand = np.random.RandomState(self.seed)
         size = max(
@@ -55,10 +62,3 @@ class Crop(_Augmentor):
             ].reshape((N * self.repeats, size, -1))
 
         return X_aug, Y_aug
-
-    def _augment_repeat(self, X, Y):
-        """
-        Overwrite the memory-expensive base method.
-        Repeat mode is handle by _augment_once
-        """
-        return self._augment_once(X, Y)

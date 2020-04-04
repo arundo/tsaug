@@ -9,7 +9,7 @@ class Reverse(_Augmentor):
     def _change_series_length():
         return False
 
-    def _augment_once(self, X, Y):
+    def _augment_core(self, X, Y):
         X_aug = X[:, ::-1, :].copy()  # type: np.ndarray
 
         if Y is None:
