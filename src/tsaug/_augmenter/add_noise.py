@@ -100,7 +100,10 @@ class AddNoise(_Augmentor):
 
     @distr.setter
     def distr(self, d):
-        DISTR_ERROR_MSG = "Parameter `distr` must be one of 'gaussian', 'laplace', and 'uniform'."
+        DISTR_ERROR_MSG = (
+            "Parameter `distr` must be one of 'gaussian', 'laplace', and "
+            "'uniform'."
+        )
         if not isinstance(d, str):
             raise TypeError(DISTR_ERROR_MSG)
         if d not in ("gaussian", "laplace", "uniform"):
