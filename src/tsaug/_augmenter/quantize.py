@@ -47,7 +47,7 @@ class Quantize(_Augmentor):
                     raise ValueError(N_LEVELS_ERROR_MSG)
                 if (not isinstance(n[0], int)) or (not isinstance(n[1], int)):
                     raise TypeError(N_LEVELS_ERROR_MSG)
-                if n[0] > n[1]:
+                if n[0] >= n[1]:
                     raise ValueError(N_LEVELS_ERROR_MSG)
                 if (n[0] <= 0) or (n[1] <= 0):
                     raise ValueError(N_LEVELS_ERROR_MSG)
