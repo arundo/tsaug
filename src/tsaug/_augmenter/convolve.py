@@ -32,7 +32,9 @@ class Convolve(_Augmentor):
     def window(self, w):
         WINDOW_ERROR_MSG = (
             "Parameter `window` must be a str or a tuple that can pass to "
-            "`scipy.signal.get_window`, or a list of such objects."
+            "`scipy.signal.get_window`, or a list of such objects. See "
+            "https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html "
+            "for more details."
         )
         if not isinstance(w, list):
             try:
