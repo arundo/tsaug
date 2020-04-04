@@ -32,11 +32,11 @@ class _Augmentor(ABC):
     def prob(self, p: float) -> None:
         if not isinstance(p, (int, float)):
             raise TypeError(
-                "Parameter `prob` must be a float between 0 and 1."
+                "Parameter `prob` must be a positive number between 0 and 1."
             )
-        if p > 1.0 or p < 0.0:
+        if p > 1.0 or p <= 0.0:
             raise TypeError(
-                "Parameter `prob` must be a float between 0 and 1."
+                "Parameter `prob` must be a positive number between 0 and 1."
             )
         self._prob = p
 
@@ -99,13 +99,6 @@ class _Augmentor(ABC):
         else:
             return X_aug, Y_aug
 
-    @abstractmethod
-    def _augment_core(self, X, Y):
-        """
-        The core of augmentation.
-        """
-        pass
-
     def _augment(self, X, Y):
         """
         The main part of augmentation, without pre- and post-processing.
@@ -132,25 +125,47 @@ class _Augmentor(ABC):
 
         """
         rand = np.random.RandomState(self.seed)
-        N = len(X)
+        N, T, C = X.shape
         ind = (
             rand.uniform(size=self.repeats * N) <= self.prob
         )  # indice of series to be augmented
         if Y is None:
             if self.repeats > 1:
-                X_aug = np.vstack([X.copy()] * self.repeats)
+                X_aug = (
+                    np.stack([X.copy() for _ in range(self.repeats)], axis=0)
+                    .swapaxes(0, 1)
+                    .reshape((N * self.repeats, T, C))
+                )
             else:
                 X_aug = X.copy()
-            X_aug[ind, :], Y_aug = self._augment_core(X_aug[ind, :], None)
+            Y_aug = None
+            if ind.any():
+                X_aug[ind, :], Y_aug = self._augment_core(X_aug[ind, :], None)
         else:
+            L = Y.shape[2]
             if self.repeats > 1:
-                X_aug = np.vstack([X.copy()] * self.repeats)
-                Y_aug = np.vstack([Y.copy()] * self.repeats)
+                X_aug = (
+                    np.stack([X.copy() for _ in range(self.repeats)], axis=0)
+                    .swapaxes(0, 1)
+                    .reshape((N * self.repeats, T, C))
+                )
+                Y_aug = (
+                    np.stack([Y.copy() for _ in range(self.repeats)], axis=0)
+                    .swapaxes(0, 1)
+                    .reshape((N * self.repeats, T, L))
+                )
             else:
                 X_aug = X.copy()
                 Y_aug = Y.copy()
-            X_aug[ind, :], Y_aug[ind, :] = self._augment_core(
-                X_aug[ind, :], Y_aug[ind, :]
-            )
-
+            if ind.any():
+                X_aug[ind, :], Y_aug[ind, :] = self._augment_core(
+                    X_aug[ind, :], Y_aug[ind, :]
+                )
         return X_aug, Y_aug
+
+    @abstractmethod
+    def _augment_core(self, X, Y):
+        """
+        The core of augmentation.
+        """
+        pass

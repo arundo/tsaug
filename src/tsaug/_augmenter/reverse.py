@@ -2,8 +2,8 @@ from .base import _Augmentor
 
 
 class Reverse(_Augmentor):
-    def __init__(self, repeats=1, prob=1.0):
-        super().__init__(repeats=repeats, prob=prob)
+    def __init__(self, repeats=1, prob=1.0, seed=None):
+        super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @staticmethod
     def _change_series_length():
