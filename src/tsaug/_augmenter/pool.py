@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Pool(_Augmentor):
+class Pool(_Augmenter):
     def __init__(
         self,
         kind="ave",
@@ -17,7 +17,6 @@ class Pool(_Augmentor):
         self.size = size
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
-
 
     @property
     def kind(self):

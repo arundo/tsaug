@@ -1,10 +1,10 @@
 import numpy as np
 
-from .base import _Augmentor
+from .base import _Augmenter
 from .resize import Resize
 
 
-class Crop(_Augmentor):
+class Crop(_Augmenter):
     def __init__(self, size, resize=None, repeats=1, prob=1.0, seed=None):
         self.size = size
         self.resize = resize

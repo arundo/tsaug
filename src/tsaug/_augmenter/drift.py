@@ -1,10 +1,10 @@
 import numpy as np
 from scipy.interpolate import CubicSpline
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Drift(_Augmentor):
+class Drift(_Augmenter):
     def __init__(
         self,
         max_drift=0.5,
@@ -22,7 +22,6 @@ class Drift(_Augmentor):
         self.per_channel = per_channel
         self.normalize = normalize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
-
 
     @property
     def max_drift(self):

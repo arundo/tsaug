@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Resize(_Augmentor):
+class Resize(_Augmenter):
     def __init__(self, size, repeats=1, prob=1.0):
         self.size = size
         super().__init__(repeats=repeats, prob=prob)

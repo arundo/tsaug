@@ -1,10 +1,10 @@
 import numpy as np
 from sklearn.cluster import KMeans
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Quantize(_Augmentor):
+class Quantize(_Augmenter):
     def __init__(
         self,
         n_levels=10,

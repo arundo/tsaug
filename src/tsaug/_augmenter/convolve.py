@@ -2,10 +2,10 @@ import numpy as np
 from scipy.ndimage.filters import convolve1d
 from scipy.signal import convolve, get_window
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Convolve(_Augmentor):
+class Convolve(_Augmenter):
     def __init__(
         self,
         window="hann",
