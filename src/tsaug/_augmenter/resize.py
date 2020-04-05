@@ -41,11 +41,7 @@ class Resize(_Augmentor):
         ] * weight_1.reshape(1, self.size - 1, 1)
         X_aug = np.concatenate([X_aug, X[:, -1:, :]], axis=1)
         if self.repeats > 1:
-            X_aug = (
-                np.stack([X_aug.copy() for _ in range(self.repeats)], axis=0)
-                .swapaxes(0, 1)
-                .reshape((N * self.repeats, T, C))
-            )
+            X_aug = np.repeat(X_aug, self.repeats, axis=0)
 
         if Y is None:
             Y_aug = None
@@ -57,13 +53,7 @@ class Resize(_Augmentor):
             Y_aug = np.concatenate([Y_aug, Y[:, -1:, :]], axis=1)
             Y_aug = Y_aug.round().astype(int)
             if self.repeats > 1:
-                Y_aug = (
-                    np.stack(
-                        [Y_aug.copy() for _ in range(self.repeats)], axis=0
-                    )
-                    .swapaxes(0, 1)
-                    .reshape((N * self.repeats, T, L))
-                )
+                Y_aug = np.repeat(Y_aug, self.repeats, axis=0)
 
         return X_aug, Y_aug
 

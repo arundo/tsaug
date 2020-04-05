@@ -112,9 +112,7 @@ class Convolve(_Augmentor):
                 window_type = rand.choice(self.window, N * C)
             else:
                 window_type = rand.choice(self.window, N)
-                window_type = np.vstack(
-                    [window_type for _ in range(C)]
-                ).T.flatten()
+                window_type = np.repeat(window_type, C)
 
         if isinstance(self.size, int):
             window_size = np.array([self.size for _ in range(N * C)])
@@ -125,17 +123,13 @@ class Convolve(_Augmentor):
                 )
             else:
                 window_size = rand.choice(range(self.size[0], self.size[1]), N)
-                window_size = np.vstack(
-                    [window_size for _ in range(C)]
-                ).T.flatten()
+                window_size = np.repeat(window_size, C)
         else:
             if self.per_channel:
                 window_size = rand.choice(self.size, N * C)
             else:
                 window_size = rand.choice(self.size, N)
-                window_size = np.vstack(
-                    [window_size for _ in range(C)]
-                ).T.flatten()
+                window_size = np.repeat(window_size, C)
         window_size = window_size.astype(int)
 
         X_aug = X.copy()

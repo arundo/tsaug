@@ -131,11 +131,7 @@ class _Augmentor(ABC):
         )  # indice of series to be augmented
         if Y is None:
             if self.repeats > 1:
-                X_aug = (
-                    np.stack([X.copy() for _ in range(self.repeats)], axis=0)
-                    .swapaxes(0, 1)
-                    .reshape((N * self.repeats, T, C))
-                )
+                X_aug = np.repeat(X.copy(), self.repeats, axis=0)
             else:
                 X_aug = X.copy()
             Y_aug = None
@@ -144,16 +140,8 @@ class _Augmentor(ABC):
         else:
             L = Y.shape[2]
             if self.repeats > 1:
-                X_aug = (
-                    np.stack([X.copy() for _ in range(self.repeats)], axis=0)
-                    .swapaxes(0, 1)
-                    .reshape((N * self.repeats, T, C))
-                )
-                Y_aug = (
-                    np.stack([Y.copy() for _ in range(self.repeats)], axis=0)
-                    .swapaxes(0, 1)
-                    .reshape((N * self.repeats, T, L))
-                )
+                X_aug = np.repeat(X.copy(), self.repeats, axis=0)
+                Y_aug = np.repeat(Y.copy(), self.repeats, axis=0)
             else:
                 X_aug = X.copy()
                 Y_aug = Y.copy()
