@@ -18,9 +18,6 @@ class Pool(_Augmentor):
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
-    @staticmethod
-    def _change_series_length():
-        return False
 
     @property
     def kind(self):

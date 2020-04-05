@@ -5,10 +5,6 @@ class Reverse(_Augmentor):
     def __init__(self, repeats=1, prob=1.0, seed=None):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
-    @staticmethod
-    def _change_series_length():
-        return False
-
     def _augment_core(self, X, Y):
         X_aug = X[:, ::-1, :].copy()  # type: np.ndarray
 

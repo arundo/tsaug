@@ -8,10 +8,6 @@ class Resize(_Augmentor):
         self.size = size
         super().__init__(repeats=repeats, prob=prob)
 
-    @staticmethod
-    def _change_series_length():
-        return True
-
     @property
     def size(self):
         return self._size
@@ -24,12 +20,32 @@ class Resize(_Augmentor):
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
 
+    def _augmented_series_length(self, T):
+        return self.size
+
     def _augment(self, X, Y):
         """
         Overwrite the memory-expensive base method.
         """
         # No need to handle prob, because it must be 1.0
         N, T, C = X.shape
+
+        if self.size == T:
+            X_aug = X.copy()
+            if Y is None:
+                Y_aug = None
+            else:
+                Y_aug = Y.copy()
+            return X_aug, Y_aug
+
+        if self.size == 1:
+            X_aug = (X[:, :1, :] + X[:, -1:, :]) / 2
+            if Y is None:
+                Y_aug = None
+            else:
+                Y_aug = (Y[:, :1, :] + Y[:, -1:, :]) / 2
+            return X_aug, Y_aug
+
         ind = np.arange(self.size - 1) / (self.size - 1) * (T - 1)
         ind_0 = ind.astype(int)
         ind_1 = ind_0 + 1

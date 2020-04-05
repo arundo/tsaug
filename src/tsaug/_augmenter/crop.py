@@ -8,10 +8,6 @@ class Crop(_Augmentor):
         self.size = size
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
-    @staticmethod
-    def _change_series_length():
-        return True
-
     @property
     def size(self):
         return self._size
@@ -23,6 +19,9 @@ class Crop(_Augmentor):
         if (s is not None) and (s <= 0):
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
+
+    def _augmented_series_length(self, T):
+        return self.size
 
     def _augment(self, X, Y):
         """
