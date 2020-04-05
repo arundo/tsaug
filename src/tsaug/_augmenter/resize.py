@@ -28,7 +28,7 @@ class Resize(_Augmentor):
         Overwrite the memory-expensive base method.
         """
         # No need to handle prob, because it must be 1.0
-        N, T, C = X.shape
+        T = X.shape[1]
 
         if self.size == T:
             X_aug = X.copy()
@@ -62,7 +62,6 @@ class Resize(_Augmentor):
         if Y is None:
             Y_aug = None
         else:
-            L = Y.shape[2]
             Y_aug = Y[:, ind_0, :] * weight_0.reshape(1, self.size - 1, 1) + Y[
                 :, ind_1, :
             ] * weight_1.reshape(1, self.size - 1, 1)
