@@ -23,9 +23,6 @@ class Drift(_Augmentor):
         self.normalize = normalize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
-    @staticmethod
-    def _change_series_length():
-        return False
 
     @property
     def max_drift(self):

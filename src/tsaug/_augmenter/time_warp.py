@@ -9,9 +9,6 @@ class TimeWarp(_Augmentor):
         self.n_speed_change = n_speed_change
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
-    @staticmethod
-    def _change_series_length():
-        return False
 
     @property
     def n_speed_change(self):

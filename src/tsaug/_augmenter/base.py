@@ -40,10 +40,16 @@ class _Augmentor(ABC):
             )
         self._prob = p
 
-    @staticmethod
-    @abstractmethod
-    def _change_series_length() -> bool:
-        return False
+    def _augmented_series_length(self, T):
+        """
+        Return the length (2nd dimension) of augmented series.
+
+        For most augmenters, the length of series will not be changed. If an
+        augmenter does change the length of series, this method should be
+        overwritten in the augmenter subclass.
+
+        """
+        return T
 
     def augment(
         self, X: np.ndarray, Y: Optional[np.ndarray] = None
@@ -78,7 +84,7 @@ class _Augmentor(ABC):
         # expected, it must has prob equal to 1, otherwise the outputs may have
         # different length
         if (
-            self._change_series_length()
+            self._augmented_series_length(T) != T
             and ((self.repeats > 1) or (N > 1))
             and (self.prob != 1.0)
         ):
