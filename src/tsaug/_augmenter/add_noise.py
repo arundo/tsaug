@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class AddNoise(_Augmentor):
+class AddNoise(_Augmenter):
     def __init__(
         self,
         loc=0.0,

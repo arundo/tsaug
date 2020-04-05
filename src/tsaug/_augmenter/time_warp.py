@@ -1,14 +1,13 @@
 import numpy as np
 from scipy.interpolate import PchipInterpolator, interp1d
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class TimeWarp(_Augmentor):
+class TimeWarp(_Augmenter):
     def __init__(self, n_speed_change=3, repeats=1, prob=1.0, seed=None):
         self.n_speed_change = n_speed_change
         super().__init__(repeats=repeats, prob=prob, seed=seed)
-
 
     @property
     def n_speed_change(self):

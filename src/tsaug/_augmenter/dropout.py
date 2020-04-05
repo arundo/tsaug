@@ -1,9 +1,9 @@
 import numpy as np
 
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Dropout(_Augmentor):
+class Dropout(_Augmenter):
     def __init__(
         self,
         p=0.05,

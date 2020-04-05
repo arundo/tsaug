@@ -1,7 +1,7 @@
-from .base import _Augmentor
+from .base import _Augmenter
 
 
-class Reverse(_Augmentor):
+class Reverse(_Augmenter):
     def __init__(self, repeats=1, prob=1.0, seed=None):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
