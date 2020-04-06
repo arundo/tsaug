@@ -20,6 +20,10 @@ class Convolve(_Augmenter):
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("window", "size", "per_channel")
+
     @property
     def window(self):
         return self._window

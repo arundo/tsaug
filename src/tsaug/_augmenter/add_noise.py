@@ -4,6 +4,36 @@ from .base import _Augmenter
 
 
 class AddNoise(_Augmenter):
+    """
+    Add random noise to time series.
+
+    The noise added to every time point of a time series is independent and
+    identically distributed.
+
+    Parameters
+    ----------
+    loc : float, list, or tuple, optional
+        Mean of the random noise. Default: 0.0
+
+    scale : float, list, or tuple, optional
+        Standard deviation of the random noise.
+
+    distr : str, optional
+
+    kind : str, optional
+
+    per_channel : bool, optional
+
+    normalize : bool, optional
+
+    repeats : int, optional
+
+    prob : float, optional
+
+    seed : int, optional
+
+    """
+
     def __init__(
         self,
         loc=0.0,
@@ -23,6 +53,10 @@ class AddNoise(_Augmenter):
         self.per_channel = per_channel
         self.normalize = normalize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
+
+    @classmethod
+    def _get_param_name(cls):
+        return ("loc", "scale", "distr", "kind", "per_channel", "normalize")
 
     @property
     def loc(self):

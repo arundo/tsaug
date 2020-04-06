@@ -8,6 +8,10 @@ class Resize(_Augmenter):
         self.size = size
         super().__init__(repeats=repeats, prob=prob)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("size",)
+
     @property
     def size(self):
         return self._size

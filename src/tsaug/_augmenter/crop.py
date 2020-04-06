@@ -10,6 +10,10 @@ class Crop(_Augmenter):
         self.resize = resize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("size", "resize")
+
     @property
     def size(self):
         return self._size

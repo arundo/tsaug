@@ -9,6 +9,10 @@ class TimeWarp(_Augmenter):
         self.n_speed_change = n_speed_change
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("n_speed_change",)
+
     @property
     def n_speed_change(self):
         return self._n_speed_change
