@@ -55,7 +55,7 @@ class TimeWarp(_Augmenter):
                     raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
                 if not all([isinstance(nn, (float, int)) for nn in n]):
                     raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
-                if not all([nn >= 0 for nn in n]):
+                if not all([nn >= 1.0 for nn in n]):
                     raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
             elif isinstance(n, tuple):
                 if len(n) != 2:
@@ -66,11 +66,11 @@ class TimeWarp(_Augmenter):
                     raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
                 if n[0] > n[1]:
                     raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
-                if (n[0] < 0) or (n[1] < 0):
+                if (n[0] < 1.0) or (n[1] < 1.0):
                     raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
             else:
                 raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
-        elif n < 0:
+        elif n < 1.0:
             raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
         self._maxmin_speed_ratio = n
 
