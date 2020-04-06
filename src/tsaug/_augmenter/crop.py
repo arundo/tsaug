@@ -57,7 +57,25 @@ class Crop(_Augmenter):
         self._resize = s
 
     def _augmented_series_length(self, T):
-        return self.size
+        if isinstance(self.size, int):
+            size = [self.size]
+        elif isinstance(self.size, tuple):
+            size = list(range(self.size[0], self.size[1]))
+        else:
+            size = self.size
+
+        if self.resize is not None:
+            resize = self.resize
+        else:
+            if len(size) > 1:
+                raise ValueError(
+                    "Parameter `resize` must be specified if parameter `size` "
+                    "is not a single value."
+                )
+            else:
+                resize = size[0]
+
+        return resize
 
     def _augment(self, X, Y):
         """
