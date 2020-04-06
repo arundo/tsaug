@@ -20,6 +20,10 @@ class Dropout(_Augmenter):
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("p", "size", "fill", "per_channel")
+
     @property
     def p(self):
         return self._p

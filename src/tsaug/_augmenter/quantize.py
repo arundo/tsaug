@@ -19,6 +19,10 @@ class Quantize(_Augmenter):
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("n_levels", "how", "per_channel")
+
     @property
     def n_levels(self):
         return self._n_levels

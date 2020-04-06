@@ -5,6 +5,10 @@ class Reverse(_Augmenter):
     def __init__(self, repeats=1, prob=1.0, seed=None):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return tuple()
+
     def _augment_core(self, X, Y):
         X_aug = X[:, ::-1, :].copy()  # type: np.ndarray
 

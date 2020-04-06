@@ -23,6 +23,16 @@ class Drift(_Augmenter):
         self.normalize = normalize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return (
+            "max_drift",
+            "n_drift_points",
+            "kind",
+            "per_channel",
+            "normalize",
+        )
+
     @property
     def max_drift(self):
         return self._max_drift

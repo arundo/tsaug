@@ -18,6 +18,10 @@ class Pool(_Augmenter):
         self.per_channel = per_channel
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
+    @classmethod
+    def _get_param_name(cls):
+        return ("kind", "size", "per_channel")
+
     @property
     def kind(self):
         return self._kind

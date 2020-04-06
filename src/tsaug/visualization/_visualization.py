@@ -1,5 +1,5 @@
 """
-This module includes functions to visualize time series and anomalies detected
+This module includes functions to visualize time series and segmentation mask.
 """
 try:
     import matplotlib.pyplot as plt

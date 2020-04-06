@@ -13,6 +13,17 @@ class _Augmenter(ABC):
         self.prob = prob
         self.seed = seed
 
+    @classmethod
+    @abstractmethod
+    def _get_param_name(cls):
+        return tuple()
+
+    def _get_params(self):
+        return {
+            param_name: getattr(self, param_name)
+            for param_name in self._get_param_name()
+        }
+
     @property
     def repeats(self) -> int:
         return self._repeat
@@ -222,7 +233,7 @@ class _Augmenter(ABC):
         """
         pass
 
-    def copy(self):
+    def _copy(self):
         "Return a copy of this augmenter."
         return deepcopy(self)
 
@@ -230,7 +241,7 @@ class _Augmenter(ABC):
         """
         Operator *
         """
-        copy = self.copy()
+        copy = self._copy()
         copy.repeats = copy.repeats * m
         return copy
 
@@ -238,7 +249,7 @@ class _Augmenter(ABC):
         """
         Operator @
         """
-        copy = self.copy()
+        copy = self._copy()
         copy.prob = copy.prob * p
         return copy
 
@@ -247,11 +258,11 @@ class _Augmenter(ABC):
         Operator +
         """
         if isinstance(another_augmenter, _Augmenter):
-            return _AugmenterPipe([self.copy(), another_augmenter.copy()])
+            return _AugmenterPipe([self._copy(), another_augmenter._copy()])
         elif isinstance(another_augmenter, _AugmenterPipe):
             return _AugmenterPipe(
-                [self.copy()]
-                + [augmenter.copy() for augmenter in another_augmenter.pipe]
+                [self._copy()]
+                + [augmenter._copy() for augmenter in another_augmenter]
             )
         else:
             raise TypeError(
@@ -267,9 +278,58 @@ class _AugmenterPipe:
     def __init__(self, pipe):
         self._pipe = pipe
 
-    @property
-    def pipe(self):
-        return self._pipe
+    def __getitem__(self, ind):
+        if isinstance(self._pipe.__getitem__(ind), _Augmenter):
+            return self._pipe.__getitem__(ind)
+        else:
+            return _AugmenterPipe(self._pipe.__getitem__(ind))
+
+    def __setitem__(self, ind, value):
+        if isinstance(self._pipe.__getitem__(ind), _Augmenter) and isinstance(
+            value, _Augmenter
+        ):
+            self._pipe.__setitem__(ind, value)
+        else:
+            raise NotImplementedError(
+                "Setting multiple augmenters in an augmenter pipe is not "
+                "supported yet."
+            )
+
+    def __iter__(self):
+        return self._pipe.__iter__()
+
+    def summary(self, show_params=False):
+        """
+        Print summary of this augmenter pipe.
+
+        Parameters
+        ----------
+        show_params : bool, optional
+            Whether show parameters of each augmenter in the summary table. If
+            True, the table may be too wide to be readable. Default: False.
+
+        """
+
+        print(
+            "{ind}\t{name}\t{repeats}\t{prob}\t{param}".format(
+                ind="idx",
+                name="augmenter",
+                repeats="repeats".rjust(8),
+                prob="prob".rjust(5),
+                param="params" if show_params else "",
+            )
+        )
+        print("=" * (120 if show_params else 45))
+        for i, augmenter in enumerate(self):
+            print(
+                "{ind:3.0g}\t{name}\t{repeats:8.3g}\t{prob:5.3g}\t{param}".format(
+                    ind=i,
+                    name=augmenter.__class__.__name__.ljust(8),
+                    repeats=augmenter.repeats,
+                    prob=augmenter.prob,
+                    param=augmenter._get_params() if show_params else "",
+                )
+            )
 
     def augment(self, X, Y=None):
         """
@@ -299,13 +359,13 @@ class _AugmenterPipe:
         """
         if isinstance(another_augmenter, _Augmenter):
             return _AugmenterPipe(
-                [augmenter.copy() for augmenter in self.pipe]
-                + [another_augmenter.copy()]
+                [augmenter._copy() for augmenter in self]
+                + [another_augmenter._copy()]
             )
         elif isinstance(another_augmenter, _AugmenterPipe):
             return _AugmenterPipe(
-                [augmenter.copy() for augmenter in self.pipe]
-                + [augmenter.copy() for augmenter in another_augmenter.pipe]
+                [augmenter._copy() for augmenter in self]
+                + [augmenter._copy() for augmenter in another_augmenter]
             )
         else:
             raise TypeError(
