@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Optional, Tuple, Union
 
 import numpy as np
 
 
-class _Augmentor(ABC):
+class _Augmenter(ABC):
     def __init__(
         self, repeats: int = 1, prob: float = 1.0, seed: Optional[int] = None
     ) -> None:
@@ -40,6 +41,15 @@ class _Augmentor(ABC):
             )
         self._prob = p
 
+    @property
+    def seed(self):
+        return self._seed
+
+    @seed.setter
+    def seed(self, s):
+        np.random.RandomState(s)  # try setting up seed
+        self._seed = s
+
     def _augmented_series_length(self, T):
         """
         Return the length (2nd dimension) of augmented series.
@@ -55,7 +65,7 @@ class _Augmentor(ABC):
         self, X: np.ndarray, Y: Optional[np.ndarray] = None
     ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
-        Augment time series
+        Augment time series.
 
         Parameters
         ----------
@@ -131,7 +141,7 @@ class _Augmentor(ABC):
 
         """
         rand = np.random.RandomState(self.seed)
-        N, T, C = X.shape
+        N = X.shape[0]
         ind = (
             rand.uniform(size=self.repeats * N) <= self.prob
         )  # indice of series to be augmented
@@ -144,7 +154,6 @@ class _Augmentor(ABC):
             if ind.any():
                 X_aug[ind, :], Y_aug = self._augment_core(X_aug[ind, :], None)
         else:
-            L = Y.shape[2]
             if self.repeats > 1:
                 X_aug = np.repeat(X.copy(), self.repeats, axis=0)
                 Y_aug = np.repeat(Y.copy(), self.repeats, axis=0)
@@ -163,3 +172,94 @@ class _Augmentor(ABC):
         The core of augmentation.
         """
         pass
+
+    def copy(self):
+        "Return a copy of this augmenter."
+        return deepcopy(self)
+
+    def __mul__(self, m: int):
+        """
+        Operator *
+        """
+        copy = self.copy()
+        copy.repeats = copy.repeats * m
+        return copy
+
+    def __matmul__(self, p: float):
+        """
+        Operator @
+        """
+        copy = self.copy()
+        copy.prob = copy.prob * p
+        return copy
+
+    def __add__(self, another_augmenter):
+        """
+        Operator +
+        """
+        if isinstance(another_augmenter, _Augmenter):
+            return _AugmenterPipe([self.copy(), another_augmenter.copy()])
+        elif isinstance(another_augmenter, _AugmenterPipe):
+            return _AugmenterPipe(
+                [self.copy()]
+                + [augmenter.copy() for augmenter in another_augmenter.pipe]
+            )
+        else:
+            raise TypeError(
+                "An augmenter can only be connected by another augmenter or an "
+                "augmentor pipeline."
+            )
+
+    def __len__(self) -> int:
+        return 1
+
+
+class _AugmenterPipe:
+    def __init__(self, pipe):
+        self._pipe = pipe
+
+    @property
+    def pipe(self):
+        return self._pipe
+
+    def augment(self, X, Y=None):
+        """
+        Augment time series.
+
+        Parameters
+        ----------
+        X : numpy array
+            Time series to be augmented
+
+        """
+        X_aug = X
+        Y_aug = Y
+        for augmenter in self._pipe:
+            if Y_aug is None:
+                X_aug = augmenter.augment(X_aug)
+            else:
+                X_aug, Y_aug = augmenter.augment(X_aug, Y_aug)
+        if Y_aug is None:
+            return X_aug
+        else:
+            return X_aug, Y_aug
+
+    def __add__(self, another_augmenter):
+        """
+        Operator +
+        """
+        if isinstance(another_augmenter, _Augmenter):
+            return _AugmenterPipe(
+                [augmenter.copy() for augmenter in self.pipe]
+                + [another_augmenter.copy()]
+            )
+        elif isinstance(another_augmenter, _AugmenterPipe):
+            return _AugmenterPipe(
+                [augmenter.copy() for augmenter in self.pipe]
+                + [augmenter.copy() for augmenter in another_augmenter.pipe]
+            )
+        else:
+            raise TypeError(
+                "An augmenter can only be connected by another augmenter or an "
+                "augmentor pipeline."
+            )
