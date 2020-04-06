@@ -70,16 +70,50 @@ class _Augmenter(ABC):
         Parameters
         ----------
         X : numpy array
-            Time series to be augmented
+            Time series to be augmented (T,), (N,T), or (N,T,C)
 
         """
+        X_ERROR_MSG = (
+            "Input X must be a numpy array with shape (T,), (N, T), or (N, T, "
+            "C), where T is the length of a series, N is the number of series, "
+            "and C is the number of a channels in a series."
+        )
 
-        # TODO: reshape X to (N, T, C)
-        # TODO: reshape Y to (N, T, L)
-        N, T, C = X.shape
+        Y_ERROR_MSG = (
+            "Input Y must be a numpy array with shape (T,), (N, T), or (N, T, "
+            "L), where T is the length of a series, N is the number of series, "
+            "and L is the number of a segmentation classes."
+        )
+
+        if not isinstance(X, np.ndarray):
+            raise TypeError(X_ERROR_MSG)
+        ndim_x = X.ndim
+        if ndim_x == 1:  # (T, )
+            X = X.reshape(1, -1, 1)
+        elif ndim_x == 2:  # (N, T)
+            X = np.expand_dims(X, 2)
+        elif ndim_x == 3:  # (N, T, C)
+            pass
+        else:
+            raise ValueError(X_ERROR_MSG)
 
         if Y is not None:
-            Ny, Ty, L = Y.shape
+            if not isinstance(Y, np.ndarray):
+                raise TypeError(Y_ERROR_MSG)
+            ndim_y = Y.ndim
+            if ndim_y == 1:  # (T, )
+                Y = Y.reshape(1, -1, 1)
+            elif ndim_y == 2:  # (N, T)
+                Y = np.expand_dims(Y, 2)
+            elif ndim_y == 3:  # (N, T, L)
+                pass
+            else:
+                raise ValueError(Y_ERROR_MSG)
+
+        N, T, _ = X.shape
+
+        if Y is not None:
+            Ny, Ty, _ = Y.shape
             # check consistency between X and Y
             if N != Ny:
                 raise ValueError(
@@ -108,7 +142,22 @@ class _Augmenter(ABC):
         # augment
         X_aug, Y_aug = self._augment(X, Y)
 
-        # TODO: reshape X_aug, Y_aug
+        if ndim_x == 1:
+            if self.repeats == 1:
+                X_aug = X_aug.reshape(T)
+            else:
+                X_aug = X_aug.reshape(self.repeats, T)
+        elif ndim_x == 2:
+            X_aug = X_aug.reshape(N * self.repeats, T)
+
+        if Y is not None:
+            if ndim_y == 1:
+                if self.repeats == 1:
+                    Y_aug = Y_aug.reshape(T)
+                else:
+                    Y_aug = Y_aug.reshape(self.repeats, T)
+            elif ndim_y == 2:
+                Y_aug = Y_aug.reshape(N * self.repeats, T)
 
         if Y_aug is None:
             return X_aug
