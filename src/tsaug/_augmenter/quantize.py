@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.cluster import KMeans
 
 from .base import _Augmenter
 
@@ -185,10 +184,16 @@ class Quantize(_Augmenter):
                 ]
             X_aug = X_aug.reshape(N, C, T).swapaxes(1, 2)
         else:
+            try:
+                from sklearn.cluster import KMeans
+            except ImportError:
+                raise ImportError(
+                    "To use kmeans quantization, sklearn>=0.22 must be installed."
+                )
             n_levels = n_levels.flatten()
             X_aug = X.copy()
             X_aug = X.swapaxes(1, 2).reshape((N * C, T))
-            model = KMeans(n_clusters=2, n_jobs=-1)
+            model = KMeans(n_clusters=2, n_jobs=-1, random_state=self.seed)
             for i in range(len(X_aug)):
                 model.n_clusters = n_levels[i]
                 ind = model.fit_predict(X_aug[i].reshape(-1, 1))

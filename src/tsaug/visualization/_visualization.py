@@ -5,8 +5,7 @@ try:
     import matplotlib.pyplot as plt
 except ImportError:
     raise ImportError(
-        "To use the visualization module, matplotlib must be installed. Try "
-        "installing tsaug with extra 'visual' (`pip install tsaug[visual]`)."
+        "To use the visualization module, matplotlib>=3 must be installed."
     )
 
 import numpy as np
