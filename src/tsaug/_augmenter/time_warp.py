@@ -83,7 +83,7 @@ class TimeWarp(_Augmenter):
     @max_speed_ratio.setter
     def max_speed_ratio(self, n):
         MAX_SPEED_RATIO_ERROR_MSG = (
-            "Parameter `max_speed_ratio` must be a number greater or equal to 1.0, "
+            "Parameter `max_speed_ratio` must be a number greater than 1.0, "
             "a 2-tuple of such numbers representing an interval, "
             "or a list of such numbers."
         )
@@ -93,7 +93,7 @@ class TimeWarp(_Augmenter):
                     raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
                 if not all([isinstance(nn, (float, int)) for nn in n]):
                     raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
-                if not all([nn >= 1.0 for nn in n]):
+                if not all([nn > 1.0 for nn in n]):
                     raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
             elif isinstance(n, tuple):
                 if len(n) != 2:
@@ -104,11 +104,11 @@ class TimeWarp(_Augmenter):
                     raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
                 if n[0] > n[1]:
                     raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
-                if (n[0] < 1.0) or (n[1] < 1.0):
+                if (n[0] <= 1.0) or (n[1] <= 1.0):
                     raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
             else:
                 raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
-        elif n < 1.0:
+        elif n <= 1.0:
             raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
         self._max_speed_ratio = n
 
@@ -135,10 +135,13 @@ class TimeWarp(_Augmenter):
         else:
             max_speed_ratio = rand.choice(self.max_speed_ratio, size=N)
         anchor_values = rand.uniform(
-            low=1 / max_speed_ratio.reshape(N, 1),
-            high=1.0,
-            size=(N, self.n_speed_change + 1),
+            low=0.0, high=1.0, size=(N, self.n_speed_change + 1)
         )
+        anchor_values = anchor_values - (
+            anchor_values.max(axis=1, keepdims=True)
+            - max_speed_ratio.reshape(N, 1)
+            * anchor_values.min(axis=1, keepdims=True)
+        ) / (1 - max_speed_ratio.reshape(N, 1))
         anchor_values = (
             anchor_values.cumsum(axis=1)
             / anchor_values.sum(axis=1, keepdims=True)
