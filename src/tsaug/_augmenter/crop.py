@@ -178,13 +178,15 @@ class Crop(_Augmenter):
                                 crop_size == s
                             ],
                             s,
-                        ).astype(int),
+                        )
+                        .reshape(n, s)
+                        .astype(int),
                         (
                             crop_start.reshape(n, 1)
                             + np.arange(s).reshape(1, s)
                         ).astype(int),
                         :,
-                    ].reshape((n, s, C))
+                    ].reshape((n, s, L))
                 )
 
         return X_aug, Y_aug
