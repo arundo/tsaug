@@ -14,17 +14,18 @@ See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 
 Prerequisites: Python 3.5 or later.
 
-It is recommended to use **pip** for installation.
+It is recommended to install the most recent **stable** release of tsaug from PyPI.
 
 ```shell
 pip install tsaug
 ```
 
-Alternatively, you could install from source code:
+Alternatively, you could install from source code. This will give you the **latest**, but unstable, version of tsaug.
 
 ```shell
 git clone https://github.com/arundo/tsaug.git
 cd tsaug/
+git checkout develop
 pip install ./
 ```
 
