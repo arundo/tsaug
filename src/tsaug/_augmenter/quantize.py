@@ -5,6 +5,56 @@ from .base import _Augmenter
 
 
 class Quantize(_Augmenter):
+    """
+    Quantize time series to a level set.
+
+    Values in a time series are rounded to the nearest level in the level set.
+
+    Parameters
+    ----------
+    n_levels : int, tuple, or list, optional
+        The number levels in a level set.
+
+        - If int, all series (all channels if `per_channel` is True) are
+          quantized to a level set of this size.
+        - If list, a series (a channel if `per_channel` is True) is quantized
+          to a level set whose size is sampled from this list randomly.
+        - If list, a series (a channel if `per_channel` is True) is quantized
+          to a level set whose size is sampled from this interval randomly.
+
+        Default: 10.
+
+    how : str, optional
+        The method that a level set is defined.
+
+        - If 'uniform', a level set is defined by uniformly discretizing the
+          range of this channel in this series.
+        - If 'quantile', a level set is defined by the quantiles of values in
+          this channel in this series.
+        - If 'kmeans', a level set is defined by k-means clustering of values
+          in this channel in this series. Note that this method could be slow.
+
+        Default: 'uniform'.
+
+    per_channel : bool, optional
+        Whether to sample a level set size for each channel in a time series or
+        to use the same size for all channels in a time series. Only used if
+        the level set size is not deterministic. Default: False.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         n_levels=10,

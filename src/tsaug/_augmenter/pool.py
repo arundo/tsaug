@@ -4,6 +4,45 @@ from .base import _Augmenter
 
 
 class Pool(_Augmenter):
+    """
+    Reduce the temporal resolution without changing the length.
+
+    Parameters
+    ----------
+    kind : str, optional
+        Pooling function, one of 'max', 'min', and 'ave'. Default: 'ave'.
+
+    size : str, tuple, or list, optional
+        Size of pooling window.
+
+        - If int, all series (all channels if `per_channel` is True) are pooled
+          with the same pooling size.
+        - If list, a series (a channel if `per_channel` is True) is pooled with
+          a pooling size sampled from this list randomly.
+        - If 2-tuple, a series (a channel if `per_channel` is True) is pooled
+          with a pooling size sampled from this interval randomly.
+
+        Default: 2.
+
+    per_channel : bool, optional
+        Whether to sample a pooling window for each channel in a time series or
+        to use the same window for all channels in a time series. Only used if
+        the pooling window is not deterministic. Default: False.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         kind="ave",

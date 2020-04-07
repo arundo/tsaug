@@ -5,6 +5,43 @@ from .resize import Resize
 
 
 class Crop(_Augmenter):
+    """
+    Crop random sub-sequences from time series.
+
+    To guarantee all output series have the same length, if the crop size is not
+    deterministic, all crops must be resize to a fixed length.
+
+    Parameters
+    ----------
+    size : int, tuple, list
+        The length of random crops.
+
+        - If int, all crops have the same length.
+        - If list, a crop from a series has a length sampled from this list
+          randomly.
+        - If 2-tuple, a crop from a series has a length sampled from this
+          interval randomly.
+
+    resize : int, optional
+        The length that all crops are resized to. Only necessary if the crop
+        size is not fixed.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. If
+        multiple output is expected, this value must be 1.0, so that all output
+        have the same length. This parameter can also be set by operator `@`.
+        Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(self, size, resize=None, repeats=1, prob=1.0, seed=None):
         self.size = size
         self.resize = resize

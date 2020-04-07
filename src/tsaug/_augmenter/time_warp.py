@@ -5,16 +5,55 @@ from .base import _Augmenter
 
 
 class TimeWarp(_Augmenter):
+    """
+    Random time warping.
+
+    The augmenter random changed the speed of timeline. The time warping is
+    controlled by the number of speed changes and the maximal ratio of max/min
+    speed.
+
+    Parameters
+    ----------
+    n_speed_change : int, optional
+        The number of speed changes in each series. Default: 3.
+
+    max_speed_ratio : float, tuple, or list, optional
+        The maximal ratio of max/min speed in the warpped time line. The time
+        line of a series is more likely to be significantly warpeped if this
+        value is greater.
+
+        - If float, all series are warpped with the same ratio.
+        - If list, each series is warpped with a ratio that is randomly sampled
+          from the list.
+        - If 2-tuple, each series is warpped with a ratio that is randomly
+          sampled from the interval.
+
+        Default: 3.0.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         n_speed_change=3,
-        maxmin_speed_ratio=3,
+        max_speed_ratio=3.0,
         repeats=1,
         prob=1.0,
         seed=None,
     ):
         self.n_speed_change = n_speed_change
-        self.maxmin_speed_ratio = maxmin_speed_ratio
+        self.max_speed_ratio = max_speed_ratio
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
@@ -38,41 +77,40 @@ class TimeWarp(_Augmenter):
         self._n_speed_change = n
 
     @property
-    def maxmin_speed_ratio(self):
-        return self._maxmin_speed_ratio
+    def max_speed_ratio(self):
+        return self._max_speed_ratio
 
-    @maxmin_speed_ratio.setter
-    def maxmin_speed_ratio(self, n):
-        MAXMIN_SPEED_RATIO_ERROR_MSG = (
-            "Parameter `maxmin_speed_ratio` must be a number greater or equal "
-            " to 1.0, "
+    @max_speed_ratio.setter
+    def max_speed_ratio(self, n):
+        MAX_SPEED_RATIO_ERROR_MSG = (
+            "Parameter `max_speed_ratio` must be a number greater or equal to 1.0, "
             "a 2-tuple of such numbers representing an interval, "
             "or a list of such numbers."
         )
         if not isinstance(n, (float, int)):
             if isinstance(n, list):
                 if len(n) == 0:
-                    raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
                 if not all([isinstance(nn, (float, int)) for nn in n]):
-                    raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
                 if not all([nn >= 1.0 for nn in n]):
-                    raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
             elif isinstance(n, tuple):
                 if len(n) != 2:
-                    raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
                 if (not isinstance(n[0], (float, int))) or (
                     not isinstance(n[1], (float, int))
                 ):
-                    raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
                 if n[0] > n[1]:
-                    raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
                 if (n[0] < 1.0) or (n[1] < 1.0):
-                    raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                    raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
             else:
-                raise TypeError(MAXMIN_SPEED_RATIO_ERROR_MSG)
+                raise TypeError(MAX_SPEED_RATIO_ERROR_MSG)
         elif n < 1.0:
-            raise ValueError(MAXMIN_SPEED_RATIO_ERROR_MSG)
-        self._maxmin_speed_ratio = n
+            raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
+        self._max_speed_ratio = n
 
     def _augment_core(self, X, Y):
         rand = np.random.RandomState(self.seed)
@@ -86,18 +124,18 @@ class TimeWarp(_Augmenter):
             1 / (self.n_speed_change + 1),
         ) * (T - 1)
 
-        if isinstance(self.maxmin_speed_ratio, (float, int)):
-            maxmin_speed_ratio = np.ones(N) * self.maxmin_speed_ratio
-        elif isinstance(self.maxmin_speed_ratio, tuple):
-            maxmin_speed_ratio = rand.uniform(
-                low=self.maxmin_speed_ratio[0],
-                high=self.maxmin_speed_ratio[1],
+        if isinstance(self.max_speed_ratio, (float, int)):
+            max_speed_ratio = np.ones(N) * self.max_speed_ratio
+        elif isinstance(self.max_speed_ratio, tuple):
+            max_speed_ratio = rand.uniform(
+                low=self.max_speed_ratio[0],
+                high=self.max_speed_ratio[1],
                 size=N,
             )
         else:
-            maxmin_speed_ratio = rand.choice(self.maxmin_speed_ratio, size=N)
+            max_speed_ratio = rand.choice(self.max_speed_ratio, size=N)
         anchor_values = rand.uniform(
-            low=1 / maxmin_speed_ratio.reshape(N, 1),
+            low=1 / max_speed_ratio.reshape(N, 1),
             high=1.0,
             size=(N, self.n_speed_change + 1),
         )

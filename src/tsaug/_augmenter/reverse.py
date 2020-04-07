@@ -2,6 +2,25 @@ from .base import _Augmenter
 
 
 class Reverse(_Augmenter):
+    """
+    Reverse the time line of series.
+
+    Parameters
+    ----------
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(self, repeats=1, prob=1.0, seed=None):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
