@@ -4,7 +4,7 @@ tsaug
 
 `tsaug` is a Python package for time series augmentation. It offers a set of
 augmentation methods for time series, as well as a simple API to connect
-multiple augmentors into a pipeline.
+multiple augmenters into a pipeline.
 
 .. toctree::
    :caption: Table of Contents

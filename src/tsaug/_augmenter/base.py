@@ -215,7 +215,7 @@ class _Augmenter(ABC):
            quantization with kmeans. Each series should only train a model once
            instead of `repeats` times.
 
-        In those cases, the subclass of the augmentor should overwrite this
+        In those cases, the subclass of the augmenter should overwrite this
         method.
 
         """
@@ -325,7 +325,7 @@ class _Augmenter(ABC):
         else:
             raise TypeError(
                 "An augmenter can only be connected by another augmenter or an "
-                "augmentor pipeline."
+                "augmenter pipeline."
             )
 
     def __len__(self) -> int:
@@ -454,5 +454,5 @@ class _AugmenterPipe:
         else:
             raise TypeError(
                 "An augmenter can only be connected by another augmenter or an "
-                "augmentor pipeline."
+                "augmenter pipeline."
             )
