@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import PchipInterpolator, interp1d
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class TimeWarp(_Augmenter):
@@ -50,7 +50,7 @@ class TimeWarp(_Augmenter):
         max_speed_ratio=3.0,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.n_speed_change = n_speed_change
         self.max_speed_ratio = max_speed_ratio

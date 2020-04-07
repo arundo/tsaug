@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed, _default_seed
 
 
 class AddNoise(_Augmenter):
@@ -80,7 +80,7 @@ class AddNoise(_Augmenter):
         normalize=True,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.loc = loc
         self.scale = scale
