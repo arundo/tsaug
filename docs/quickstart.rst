@@ -74,7 +74,7 @@ Augment a 2-channel audio sequence
 
     - random crop subsequences of 10 seconds,
     - with 50% probability, add random noise up to 1% - 5%,
-    - drop out 10% of the time points (dropped out units are 2ms, 5 ms, or 10 ms) and fill the dropped out points with zeros.
+    - drop out 10% of the time points (dropped out units are 1 ms, 10 ms, or 100 ms) and fill the dropped out points with zeros.
 
 .. code-block:: python
 
@@ -85,8 +85,8 @@ Augment a 2-channel audio sequence
     ...     + Dropout(
     ...         p=0.1,
     ...         fill=0,
-    ...         size=[int(0.002 * samplerate), int(0.005 * samplerate), int(0.01 * samplerate)]
-    ...     )  # drop out 10% of the time points (dropped out units are 2ms, 5 ms, or 10 ms) and fill the dropped out points with zeros
+    ...         size=[int(0.001 * samplerate), int(0.01 * samplerate), int(0.1 * samplerate)]
+    ...     )  # drop out 10% of the time points (dropped out units are 1 ms, 10 ms, or 100 ms) and fill the dropped out points with zeros
     ... )
 
 3. Augment the audio sequence.
