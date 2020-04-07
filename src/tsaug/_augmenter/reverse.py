@@ -1,4 +1,4 @@
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class Reverse(_Augmenter):
@@ -21,7 +21,7 @@ class Reverse(_Augmenter):
 
     """
 
-    def __init__(self, repeats=1, prob=1.0, seed=None):
+    def __init__(self, repeats=1, prob=1.0, seed=_default_seed):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod

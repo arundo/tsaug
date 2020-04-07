@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class Resize(_Augmenter):
@@ -31,7 +31,7 @@ class Resize(_Augmenter):
 
     """
 
-    def __init__(self, size, repeats=1, prob=1.0, seed=None):
+    def __init__(self, size, repeats=1, prob=1.0, seed=_default_seed):
         self.size = size
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 

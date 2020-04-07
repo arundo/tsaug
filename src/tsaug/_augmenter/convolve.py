@@ -2,7 +2,7 @@ import numpy as np
 from scipy.ndimage.filters import convolve1d
 from scipy.signal import get_window
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed, _default_seed
 
 
 class Convolve(_Augmenter):
@@ -60,7 +60,7 @@ class Convolve(_Augmenter):
         per_channel=False,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.window = window
         self.size = size

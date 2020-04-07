@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 from .resize import Resize
 
 
@@ -42,7 +42,9 @@ class Crop(_Augmenter):
 
     """
 
-    def __init__(self, size, resize=None, repeats=1, prob=1.0, seed=None):
+    def __init__(
+        self, size, resize=None, repeats=1, prob=1.0, seed=_default_seed
+    ):
         self.size = size
         self.resize = resize
         super().__init__(repeats=repeats, prob=prob, seed=seed)

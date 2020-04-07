@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import CubicSpline
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class Drift(_Augmenter):
@@ -69,7 +69,7 @@ class Drift(_Augmenter):
         normalize=True,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.max_drift = max_drift
         self.n_drift_points = n_drift_points

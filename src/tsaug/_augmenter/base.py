@@ -4,10 +4,15 @@ from typing import Optional, Tuple, Union
 
 import numpy as np
 
+from . import _default_seed
+
 
 class _Augmenter(ABC):
     def __init__(
-        self, repeats: int = 1, prob: float = 1.0, seed: Optional[int] = None
+        self,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ) -> None:
         self.repeats = repeats
         self.prob = prob

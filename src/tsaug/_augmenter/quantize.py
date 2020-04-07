@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class Quantize(_Augmenter):
@@ -61,7 +61,7 @@ class Quantize(_Augmenter):
         per_channel=False,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.n_levels = n_levels
         self.how = how

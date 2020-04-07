@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter
+from .base import _Augmenter, _default_seed
 
 
 class Dropout(_Augmenter):
@@ -75,7 +75,7 @@ class Dropout(_Augmenter):
         per_channel=False,
         repeats=1,
         prob=1.0,
-        seed=None,
+        seed=_default_seed,
     ):
         self.p = p
         self.size = size
