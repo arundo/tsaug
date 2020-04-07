@@ -24,13 +24,13 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "tsaug"
-copyright = "2019, Arundo Analytics, Inc."
+copyright = "2019-2020, Arundo Analytics, Inc."
 author = "Arundo Analytics, Inc."
 
 # The full version, including alpha/beta/rc tags
-version = "0.1"
+version = "0.2"
 
-release = "0.1.1"
+release = "0.2.0"
 
 
 # -- General configuration ---------------------------------------------------
