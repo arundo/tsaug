@@ -83,7 +83,9 @@ Augment a 2-channel audio sequence
     ...     Crop(size=samplerate * 10) * 5  # random crop subsequences of 10 seconds
     ...     + AddNoise(scale=(0.01, 0.05)) @ 0.5  # with 50% probability, add random noise up to 1% - 5%
     ...     + Dropout(
-    ...         p=0.1, fill=0, size=[0.002 * samplerate, 0.005 * samplerate, 0.01 * samplerate]
+    ...         p=0.1,
+    ...         fill=0,
+    ...         size=[int(0.002 * samplerate), int(0.005 * samplerate), int(0.01 * samplerate)]
     ...     )  # drop out 10% of the time points (dropped out units are 2ms, 5 ms, or 10 ms) and fill the dropped out points with zeros
     ... )
 
