@@ -310,7 +310,6 @@ class _Augmenter(ABC):
         augmenter pipe
             The output augmenter pipe.
 
-
         """
         if isinstance(a, _Augmenter):
             return _AugmenterPipe([self._copy(), a._copy()])
@@ -392,7 +391,21 @@ class _AugmenterPipe:
         Parameters
         ----------
         X : numpy array
-            Time series to be augmented
+            Time series to be augmented. It must be a numpy array with shape
+            (T,), (N, T), or (N, T, C), where T is the length of a series, N is
+            the number of series, and C is the number of a channels in a series.
+
+        Y: numpy array, optional
+            Segmentation mask of the original time series. It must be a binary
+            numpy array with shape (T,), (N, T), or (N, T, L), where T is the
+            length of a series, N is the number of series, and L is the number
+            of a segmentation classes. Default: None.
+
+        Returns
+        -------
+        2-tuple (numpy array, numpy array), or numpy array
+            The augmented time series, and (optionally) the augmented
+            segmentation mask.
 
         """
         X_aug = X
@@ -409,7 +422,20 @@ class _AugmenterPipe:
 
     def __add__(self, a):
         """
-        Operator +
+        Operator + connects this augmenter pipe with another augmenter or an
+        augmenter pipe to form a new augmenter pipe.
+
+        Parameters
+        ----------
+        a : augmenter or augmenter pipe
+            The augmenter or augmenter pipe to be connected with this augmenter
+            pipe.
+
+        Returns
+        -------
+        augmenter pipe
+            The output augmenter pipe.
+
         """
         if isinstance(a, _Augmenter):
             return _AugmenterPipe(
