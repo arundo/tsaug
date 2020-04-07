@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.ndimage.filters import convolve1d
-from scipy.signal import convolve, get_window
+from scipy.signal import get_window
 
 from .base import _Augmenter
 
