@@ -1,18 +1,66 @@
 References
 ===========
-`tsaug` provides a set of time series augmentation methods. Every method has two implementations: a function and and a class. All methods support augmentation of time series as well as associated labels if exist. All methods support multi-channel time series and multi-class labels.
 
-.. toctree::
-   :maxdepth: 1
+.. currentmodule:: tsaug
 
-   augmentation_funcs
-   augmentation_classes
+.. autosummary::
+   AddNoise
+   Convolve
+   Crop
+   Drift
+   Dropout
+   Pool
+   Quantize
+   Resize
+   Reverse
+   TimeWarp
 
+.. autoclass:: tsaug.AddNoise
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Convolve
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Crop
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Drift
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Dropout
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Pool
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Quantize
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Resize
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
 
+.. autoclass:: tsaug.Reverse
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__
+
+.. autoclass:: tsaug.TimeWarp
+   :members:
+   :inherited-members:
+   :special-members: __mul__, __matmul__, __add__

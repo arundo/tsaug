@@ -81,7 +81,21 @@ class _Augmenter(ABC):
         Parameters
         ----------
         X : numpy array
-            Time series to be augmented (T,), (N,T), or (N,T,C)
+            Time series to be augmented. It must be a numpy array with shape
+            (T,), (N, T), or (N, T, C), where T is the length of a series, N is
+            the number of series, and C is the number of a channels in a series.
+
+        Y: numpy array, optional
+            Segmentation mask of the original time series. It must be a binary
+            numpy array with shape (T,), (N, T), or (N, T, L), where T is the
+            length of a series, N is the number of series, and L is the number
+            of a segmentation classes. Default: None.
+
+        Returns
+        -------
+        2-tuple (numpy array, numpy array), or numpy array
+            The augmented time series, and (optionally) the augmented
+            segmentation mask.
 
         """
         X_ERROR_MSG = (
@@ -239,7 +253,21 @@ class _Augmenter(ABC):
 
     def __mul__(self, m: int):
         """
-        Operator *
+        Operator * creates an augmenter that is equivalent to running this
+        augmenter for m times independently.
+
+        Parameters
+        ----------
+        m : int
+            The returned augmenter is equivalent to running this augmenter for
+            m times independently.
+
+        Returns
+        -------
+        augmenter
+            An augmenter that is equivalent to running this augmenter for m
+            times independently.
+
         """
         copy = self._copy()
         copy.repeats = copy.repeats * m
@@ -247,22 +275,48 @@ class _Augmenter(ABC):
 
     def __matmul__(self, p: float):
         """
-        Operator @
+        Operator @ creates an augmenter that is equivalent to running this
+        augmenter with probability p.
+
+        Parameters
+        ----------
+        p : float
+            The returned augmenter is equivalent to running this augmenter with
+            probability p.
+
+        Returns
+        -------
+        augmenter
+            An augmenter that is equivalent to running this augmenter with
+            probability p.
+
         """
         copy = self._copy()
         copy.prob = copy.prob * p
         return copy
 
-    def __add__(self, another_augmenter):
+    def __add__(self, a):
         """
-        Operator +
+        Operator + connects this augmenter with another augmenter or an
+        augmenter pipe to form a (new) augmenter pipe.
+
+        Parameters
+        ----------
+        a : augmenter or augmenter pipe
+            The augmenter or augmenter pipe to be connected with this augmenter.
+
+        Returns
+        -------
+        augmenter pipe
+            The output augmenter pipe.
+
+
         """
-        if isinstance(another_augmenter, _Augmenter):
-            return _AugmenterPipe([self._copy(), another_augmenter._copy()])
-        elif isinstance(another_augmenter, _AugmenterPipe):
+        if isinstance(a, _Augmenter):
+            return _AugmenterPipe([self._copy(), a._copy()])
+        elif isinstance(a, _AugmenterPipe):
             return _AugmenterPipe(
-                [self._copy()]
-                + [augmenter._copy() for augmenter in another_augmenter]
+                [self._copy()] + [augmenter._copy() for augmenter in a]
             )
         else:
             raise TypeError(
@@ -353,19 +407,18 @@ class _AugmenterPipe:
         else:
             return X_aug, Y_aug
 
-    def __add__(self, another_augmenter):
+    def __add__(self, a):
         """
         Operator +
         """
-        if isinstance(another_augmenter, _Augmenter):
+        if isinstance(a, _Augmenter):
             return _AugmenterPipe(
-                [augmenter._copy() for augmenter in self]
-                + [another_augmenter._copy()]
+                [augmenter._copy() for augmenter in self] + [a._copy()]
             )
-        elif isinstance(another_augmenter, _AugmenterPipe):
+        elif isinstance(a, _AugmenterPipe):
             return _AugmenterPipe(
                 [augmenter._copy() for augmenter in self]
-                + [augmenter._copy() for augmenter in another_augmenter]
+                + [augmenter._copy() for augmenter in a]
             )
         else:
             raise TypeError(
