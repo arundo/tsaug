@@ -4,6 +4,69 @@ from .base import _Augmenter
 
 
 class Dropout(_Augmenter):
+    """
+    Dropout values of some random time points in time series.
+
+    Single time points or sub-sequences could be dropped out.
+
+    Parameters
+    ----------
+    p : float, tuple, or list, optional
+        Probablity of the value of a time point to be dropped out.
+
+        - If float, all series (all channels if `per_channel` is True) have the
+          same probability.
+        - If list, a series (a channel if `per_channel` is True) has a
+          probability sampled from this list randomly.
+        - If 2-tuple, a series (a channel if `per_channel` is True) has a
+          probability sampled from this interval randomly.
+
+        Default: 0.05.
+
+    size : int, tuple, or list, optional
+        Size of dropped out units.
+
+        - If int, all dropped out units have the same size.
+        - If list, a dropped out unit has size sampled from this list randomly.
+        - If 2-tuple, a dropped out unit has size sampled from this interval
+          randomly.
+
+        Note that dropped out units could overlap which results in larger units
+        effectively, though the probability is low if `p` is small.
+
+        Default: 1.
+
+    fill : str or float, optional
+        How a dropped out value is filled.
+
+        - If 'ffill', fill with the last previous value that is not dropped.
+        - If 'bfill', fill with the first next value that is not dropped.
+        - If 'mean', fill with the mean value of this channel in this series.
+        - If 'median', fill with the median value of this channel in this
+          series.
+        - If float, fill with this value.
+
+        Default: 'ffill'.
+
+    per_channel : bool, optional
+        Whether to sample dropout units independently for each channel in a time
+        series or to use the same dropout units for all channels in a time
+        series. Default: False.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         p=0.05,

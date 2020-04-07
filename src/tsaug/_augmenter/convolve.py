@@ -6,6 +6,53 @@ from .base import _Augmenter
 
 
 class Convolve(_Augmenter):
+    """
+    Convolve time series with a kernel window.
+
+    Parameters
+    ----------
+    window : str, tuple, or list, optional
+        The type of kernal window used for the convolution.
+
+        - If str or tuple, it is a window type that can be passed to
+          `scipy.signal.get_window`. See
+          https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html
+          for more details.
+        - If list, it is a list of such object. The type of a kernel window
+          convolved with a time series is randomly sampled from this list.
+
+        Default: "hann".
+
+    size : int, list, tuple, optional
+        Length of kernel windows.
+
+        - If int, all series are convolved with windows of the same length.
+        - If list, each series is convolved with a window with a size sampled
+          from the list randomly.
+        - If 2-tuple, each series is convolved with a window with a size sampled
+          from the interval randomly.
+
+        Default: 7.
+
+    per_channel : bool, optional
+        Whether to sample a kernel window for each channel in a time series or
+        to use the same window for all channels in a time series. Only used if
+        the kernel window is not deterministic. Default: False.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         window="hann",

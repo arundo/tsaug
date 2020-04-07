@@ -5,6 +5,61 @@ from .base import _Augmenter
 
 
 class Drift(_Augmenter):
+    """
+    Drift the value of time series.
+
+    The augmenter drifts the value of time series from its original values
+    randomly and smoothly. The extent of drifting is controlled by the maximal
+    drift and the number of drift points.
+
+    Parameters
+    ----------
+    max_drift : float or tuple, optional
+        The maximal amount of drift added to a time series.
+
+        - If float, all series (all channels if `per_channel` is True) are
+          drifted with the same maximum.
+        - If tuple, the maximal drift added to a time series (a channel if
+          `per_channel` is True) is sampled from this interval randomly.
+
+        Default: 0.5.
+
+    n_drift_points : int or list, optional
+        The number of time points a new drifting trend is defined in a series.
+
+        - If int, all series (all channels if `per_channel` is True) have the
+          same number of drift points.
+        - If list, the number of drift points defined in a series (a channel if
+          `per_channel` is True) is sampled from this list randomly.
+
+    kind : str, optional
+        How the noise is added to the original time series. It must be either
+        'additive' or 'multiplicative'. Default: 'additive'.
+
+    per_channel : bool, optional
+        Whether to sample independent drifting trends for each channel in a time
+        series or to use the same drifting trends for all channels in a time
+        series. Default: True.
+
+    normalize : bool, optional
+        Whether the drifting trend is added to the normalized time series. If
+        True, each channel of a time series is normalized to [0, 1] first.
+        Default: True.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
     def __init__(
         self,
         max_drift=0.5,

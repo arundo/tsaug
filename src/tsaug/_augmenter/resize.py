@@ -4,9 +4,36 @@ from .base import _Augmenter
 
 
 class Resize(_Augmenter):
-    def __init__(self, size, repeats=1, prob=1.0):
+    """
+    Change the temporal resolution of time series.
+
+    The resized time series is obtained by linear interpolation of the original
+    time series.
+
+    Parameters
+    ----------
+    size : int
+        Length of the output series.
+
+    repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
+
+    prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. If
+        multiple output is expected, this value must be 1.0, so that all output
+        have the same length. This parameter can also be set by operator `@`.
+        Default: 1.0.
+
+    seed : int, optional
+        The random seed. Default: None.
+
+    """
+
+    def __init__(self, size, repeats=1, prob=1.0, seed=None):
         self.size = size
-        super().__init__(repeats=repeats, prob=prob)
+        super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
     def _get_param_name(cls):

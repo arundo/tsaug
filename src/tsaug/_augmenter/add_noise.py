@@ -13,24 +13,60 @@ class AddNoise(_Augmenter):
     Parameters
     ----------
     loc : float, list, or tuple, optional
-        Mean of the random noise. Default: 0.0
+        Mean of the random noise.
+
+        - If float, all noise value are sampled with the same mean.
+        - If list, the noise added to a series (a channel if `per_channel` is
+          True) is sampled from a distribution with a mean value that is
+          randomly selected from the list.
+        - If 2-tuple, the noise added to a series (a channel if `per_channel`
+          is True) is sampled from a distribution with a mean value that is
+          randomly selected from the interval.
+
+        Default: 0.0.
 
     scale : float, list, or tuple, optional
         Standard deviation of the random noise.
 
+        - If float, all noise value are sampled with the same standard
+          deviation.
+        - If list, the noise added to a series (a channel if `per_channel` is
+          True) is sampled from a distribution with a standard deviation that is
+          randomly selected from the list.
+        - If 2-tuple, the noise added to a series (a channel if `per_channel`
+          is True) is sampled from a distribution with a standard deviation that
+          is randomly selected from the interval.
+
+        Default: 0.1.
+
     distr : str, optional
+        Distribution of the random noise. It must be one of 'gaussian',
+        'laplace', and 'uniform'. Default: 'gaussian'.
 
     kind : str, optional
+        How the noise is added to the original time series. It must be either
+        'additive' or 'multiplicative'. Default: 'additive'.
 
     per_channel : bool, optional
+        Whether to sample independent noise values for each channel in a time
+        series or to use the same noise for all channels in a time series.
+        Default: True.
 
     normalize : bool, optional
+        Whether the noise is added to the normalized time series. If True, each
+        channel of a time series is normalized to [0, 1] first. Default: True.
 
     repeats : int, optional
+        The number of times a series is augmented. If greater than one, a series
+        will be augmented so many times independently. This parameter can also
+        be set by operator `*`. Default: 1.
 
     prob : float, optional
+        The probability of a series is augmented. It must be in (0.0, 1.0]. This
+        parameter can also be set by operator `@`. Default: 1.0.
 
     seed : int, optional
+        The random seed. Default: None.
 
     """
 
@@ -218,7 +254,7 @@ class AddNoise(_Augmenter):
             else:
                 X_aug = X + noise
         else:
-            X_aug = X * noise
+            X_aug = X * (1.0 + noise)
 
         if Y is not None:
             Y_aug = Y.copy()
