@@ -1,1 +1,1 @@
-_default_seed = 0
+_default_seed = None
