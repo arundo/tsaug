@@ -16,14 +16,13 @@ from tsaug import (
 
 augmenters = [
     AddNoise(),
-    Convolve(),
-    Crop(size=100),
+    Convolve(size=(7, 10)) * 10,
+    Crop(size=50),
     Drift(),
     Dropout(),
-    Pool(),
-    Quantize(),
-    Resize(size=100),
-    Reverse(),
+    Pool(size=[2, 4, 8]) * 10,
+    Quantize(n_levels=[10, 20, 30]) * 10,
+    Reverse() @ 0.5 * 10,
     TimeWarp(),
 ]
 
@@ -53,8 +52,8 @@ def test_X1_Y0(augmenter):
     augmenter.seed = None
     X_aug_2 = augmenter.augment(X1)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -68,8 +67,8 @@ def test_X1_Y1(augmenter):
     augmenter.seed = None
     X_aug_2, Y_aug_2 = augmenter.augment(X1, Y1)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -77,12 +76,14 @@ def test_X2_Y0(augmenter):
     """
     2D X, no Y
     """
-    X_aug_0 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(X2)
-    X_aug_1 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(X2)
-    X_aug_2 = (augmenter[0](random_seed=1, **augmenter[1]) * M).run(X2)
+    augmenter.seed = 0
+    X_aug_0 = augmenter.augment(X2)
+    X_aug_1 = augmenter.augment(X2)
+    augmenter.seed = None
+    X_aug_2 = augmenter.augment(X2)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -90,18 +91,17 @@ def test_X2_Y2(augmenter):
     """
     2D X, 2D Y
     """
-    X_aug_0, Y_aug_0 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(
-        X2, Y2
-    )
-    X_aug_1, Y_aug_1 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(
-        X2, Y2
-    )
-    X_aug_2, Y_aug_2 = (augmenter[0](random_seed=1, **augmenter[1]) * M).run(
-        X2, Y2
-    )
+    augmenter.seed = 0
+    X_aug_0, Y_aug_0 = augmenter.augment(X2, Y2)
+    X_aug_1, Y_aug_1 = augmenter.augment(X2, Y2)
+    augmenter.seed = None
+    X_aug_2, Y_aug_2 = augmenter.augment(X2, Y2)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
+
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -109,12 +109,14 @@ def test_X3_Y0(augmenter):
     """
     3D X, no Y
     """
-    X_aug_0 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(X3)
-    X_aug_1 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(X3)
-    X_aug_2 = (augmenter[0](random_seed=1, **augmenter[1]) * M).run(X3)
+    augmenter.seed = 0
+    X_aug_0 = augmenter.augment(X3)
+    X_aug_1 = augmenter.augment(X3)
+    augmenter.seed = None
+    X_aug_2 = augmenter.augment(X3)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -122,15 +124,41 @@ def test_X3_Y2(augmenter):
     """
     3D X, 2D Y
     """
-    X_aug_0, Y_aug_0 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(
-        X3, Y2
-    )
-    X_aug_1, Y_aug_1 = (augmenter[0](random_seed=0, **augmenter[1]) * M).run(
-        X3, Y2
-    )
-    X_aug_2, Y_aug_2 = (augmenter[0](random_seed=1, **augmenter[1]) * M).run(
-        X3, Y2
-    )
+    augmenter.seed = 0
+    X_aug_0, Y_aug_0 = augmenter.augment(X3, Y2)
+    X_aug_1, Y_aug_1 = augmenter.augment(X3, Y2)
+    augmenter.seed = None
+    X_aug_2, Y_aug_2 = augmenter.augment(X3, Y2)
 
-    assert (X_aug_0 == X_aug_1).all()
-    assert (X_aug_0 != X_aug_2).any()
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
+
+
+@pytest.mark.parametrize("augmenter", augmenters)
+def test_X3_Y3(augmenter):
+    """
+    3D X, 3D Y
+    """
+    augmenter.seed = 0
+    X_aug_0, Y_aug_0 = augmenter.augment(X3, Y3)
+    X_aug_1, Y_aug_1 = augmenter.augment(X3, Y3)
+    augmenter.seed = None
+    X_aug_2, Y_aug_2 = augmenter.augment(X3, Y3)
+
+    assert np.array_equal(X_aug_0, X_aug_1)
+    assert not np.array_equal(X_aug_0, X_aug_2)
+
+
+def test_resize_random():
+    augmenter = Resize(size=50) @ 0.5
+    augmenter.seed = None
+    X_aug = []
+    for _ in range(10):
+        X_aug.append(augmenter.augment(X1))
+    assert any([np.array_equal(X_aug[0], X_aug[i]) for i in range(1, 10)])
+
+    augmenter.seed = 0
+    X_aug = []
+    for _ in range(10):
+        X_aug.append(augmenter.augment(X1))
+    assert all([np.array_equal(X_aug[0], X_aug[i]) for i in range(1, 10)])

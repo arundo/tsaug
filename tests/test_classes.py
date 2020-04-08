@@ -53,7 +53,7 @@ def test_X1_Y0(augmenter):
     # check X_aug is not a view of X
     Xc = X1.copy()
     X_aug[0] = 12345
-    assert (Xc == X1).all()
+    assert np.array_equal(Xc, X1)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -68,12 +68,12 @@ def test_X1_Y1(augmenter):
     # check X_aug is not a view of X
     Xc = X1.copy()
     X_aug[0] = 12345
-    assert (Xc == X1).all()
+    assert np.array_equal(Xc, X1)
 
     # check Y_aug is not a view of Y
     Yc = Y1.copy()
     Y_aug[0] = 12345
-    assert (Yc == Y1).all()
+    assert np.array_equal(Yc, Y1)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -87,7 +87,7 @@ def test_X2_Y0(augmenter):
     # check X_aug is not a view of X
     Xc = X2.copy()
     X_aug[0, 0] = 12345
-    assert (Xc == X2).all()
+    assert np.array_equal(Xc, X2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -102,12 +102,12 @@ def test_X2_Y2(augmenter):
     # check X_aug is not a view of X
     Xc = X2.copy()
     X_aug[0, 0] = 12345
-    assert (Xc == X2).all()
+    assert np.array_equal(Xc, X2)
 
     # check Y_aug is not a view of Y
     Yc = Y2.copy()
     Y_aug[0, 0] = 12345
-    assert (Yc == Y2).all()
+    assert np.array_equal(Yc, Y2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -121,7 +121,7 @@ def test_X3_Y0(augmenter):
     # check X_aug is not a view of X
     Xc = X3.copy()
     X_aug[0, 0, 0] = 12345
-    assert (Xc == X3).all()
+    assert np.array_equal(Xc, X3)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -136,12 +136,12 @@ def test_X3_Y2(augmenter):
     # check X_aug is not a view of X
     Xc = X3.copy()
     X_aug[0, 0, 0] = 12345
-    assert (Xc == X3).all()
+    assert np.array_equal(Xc, X3)
 
     # check Y_aug is not a view of Y
     Yc = Y2.copy()
     Y_aug[0, 0] = 12345
-    assert (Yc == Y2).all()
+    assert np.array_equal(Yc, Y2)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
@@ -156,9 +156,9 @@ def test_X3_Y3(augmenter):
     # check X_aug is not a view of X
     Xc = X3.copy()
     X_aug[0, 0, 0] = 12345
-    assert (Xc == X3).all()
+    assert np.array_equal(Xc, X3)
 
     # check Y_aug is not a view of Y
     Yc = Y2.copy()
     Y_aug[0, 0] = 12345
-    assert (Yc == Y2).all()
+    assert np.array_equal(Yc, Y2)
