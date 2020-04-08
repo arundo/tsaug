@@ -109,7 +109,7 @@ class AddNoise(_Augmenter):
             if isinstance(n, list):
                 if len(n) == 0:
                     raise ValueError(LOC_ERROR_MSG)
-                if not all([isinstance(nn, int) for nn in n]):
+                if not all([isinstance(nn, (float, int)) for nn in n]):
                     raise TypeError(LOC_ERROR_MSG)
             elif isinstance(n, tuple):
                 if len(n) != 2:
