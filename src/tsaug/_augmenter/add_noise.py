@@ -1,6 +1,6 @@
 import numpy as np
 
-from .base import _Augmenter, _default_seed, _default_seed
+from .base import _Augmenter, _default_seed
 
 
 class AddNoise(_Augmenter):
