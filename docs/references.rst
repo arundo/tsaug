@@ -64,3 +64,8 @@ References
    :members:
    :inherited-members:
    :special-members: __mul__, __matmul__, __add__
+
+.. currentmodule:: tsaug.visualization
+
+.. autofunction:: plot
+
