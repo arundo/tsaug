@@ -10,8 +10,6 @@ except ImportError:
 
 import numpy as np
 
-__all__ = ["plot"]
-
 
 def plot(X, Y=None):
     """
