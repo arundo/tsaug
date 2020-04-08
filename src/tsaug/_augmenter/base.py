@@ -174,20 +174,20 @@ class _Augmenter(ABC):
 
         if ndim_x == 1:
             if self.repeats == 1:
-                X_aug = X_aug.reshape(T)
+                X_aug = X_aug.flatten()
             else:
-                X_aug = X_aug.reshape(self.repeats, T)
+                X_aug = X_aug.reshape(self.repeats, -1)
         elif ndim_x == 2:
-            X_aug = X_aug.reshape(N * self.repeats, T)
+            X_aug = X_aug.reshape(N * self.repeats, -1)
 
         if Y is not None:
             if ndim_y == 1:
                 if self.repeats == 1:
-                    Y_aug = Y_aug.reshape(T)
+                    Y_aug = Y_aug.flatten()
                 else:
-                    Y_aug = Y_aug.reshape(self.repeats, T)
+                    Y_aug = Y_aug.reshape(self.repeats, -1)
             elif ndim_y == 2:
-                Y_aug = Y_aug.reshape(N * self.repeats, T)
+                Y_aug = Y_aug.reshape(N * self.repeats, -1)
 
         if Y_aug is None:
             return X_aug
