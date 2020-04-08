@@ -13,31 +13,78 @@ import numpy as np
 __all__ = ["plot"]
 
 
-def plot(X, Y=None, f=None, ax=None, global_ylim=False, saveas=None):
+def plot(X, Y=None):
     """
-    Plot time series
+    Plot time series and segmentation mask.
 
-    Args:
-        X (numpy array): Time series to plot, N*n or N*n*c matrix. Each row
-            represents a series, each column represents a time point, and the
-            third dimension (if exists) represents channels.
-        Y (numpy array): Anomaly labels, N*n or N*n*L matrix. Each row
-            represents a series, each column represents a time point, and the
-            third dimension (if exists) represents types of anomalies. Normal
-            time points are represented by 0, while anomalies are 1. If it is
-            N*n matrix, different types of anomalies may also be represented
-            by different positive integers.
-        f (matplotlib figure object): Figure to plot at. If not given, a figure
-            object will be created. Default: None
-        ax (matplotlib axes object or list of axes objects): Axes to plot
-            every series. The number of axes in the list must be N. If not
-            given, axes will be created. Default: None
-        global_ylim (bool, optional): Whether to use the same scale for all y-
-            axes. Default: False.
-        saveas (str): Path to save the figure. If not given, then the figure
-            will not be saved. Default: None
+    This function requires matplotlib>=3.0.
+
+    Parameters
+    ----------
+    X : numpy array
+        Time series to be augmented. It must be a numpy array with shape
+        (T,), (N, T), or (N, T, C), where T is the length of a series, N is
+        the number of series, and C is the number of a channels in a series.
+
+    Y: numpy array, optional
+        Segmentation mask of the original time series. It must be a binary
+        numpy array with shape (T,), (N, T), or (N, T, L), where T is the
+        length of a series, N is the number of series, and L is the number
+        of a segmentation classes. Default: None.
+
+    Returns
+    -------
+    tuple (matplotlib Figure, matplotlib Axes)
+        Figure and axes object of the plot.
+
 
     """
+    X_ERROR_MSG = (
+        "Input X must be a numpy array with shape (T,), (N, T), or (N, T, "
+        "C), where T is the length of a series, N is the number of series, "
+        "and C is the number of a channels in a series."
+    )
+
+    Y_ERROR_MSG = (
+        "Input Y must be a numpy array with shape (T,), (N, T), or (N, T, "
+        "L), where T is the length of a series, N is the number of series, "
+        "and L is the number of a segmentation classes."
+    )
+
+    if not isinstance(X, np.ndarray):
+        raise TypeError(X_ERROR_MSG)
+    ndim_x = X.ndim
+    if ndim_x == 1:  # (T, )
+        X = X.reshape(1, -1, 1)
+    elif ndim_x == 2:  # (N, T)
+        X = np.expand_dims(X, 2)
+    elif ndim_x == 3:  # (N, T, C)
+        pass
+    else:
+        raise ValueError(X_ERROR_MSG)
+
+    if Y is not None:
+        if not isinstance(Y, np.ndarray):
+            raise TypeError(Y_ERROR_MSG)
+        ndim_y = Y.ndim
+        if ndim_y == 1:  # (T, )
+            Y = Y.reshape(1, -1, 1)
+        elif ndim_y == 2:  # (N, T)
+            Y = np.expand_dims(Y, 2)
+        elif ndim_y == 3:  # (N, T, L)
+            pass
+        else:
+            raise ValueError(Y_ERROR_MSG)
+
+    N, T, _ = X.shape
+
+    if Y is not None:
+        Ny, Ty, L = Y.shape
+        # check consistency between X and Y
+        if N != Ny:
+            raise ValueError("The numbers of series in X and Y are different.")
+        if T != Ty:
+            raise ValueError("The length of series in X and Y are different.")
 
     if X.ndim == 1:
         X = X.reshape(1, -1)
@@ -45,33 +92,12 @@ def plot(X, Y=None, f=None, ax=None, global_ylim=False, saveas=None):
     if Y is not None:
         Y = np.round(np.clip(Y, 0, 1))
 
-    classes = {0, 1}
-    if Y is not None:
-        if Y.ndim == 1:
-            Y = Y.reshape(1, -1)
-        if Y.ndim == 2:
-            classes = classes.union(set(list(np.unique(Y))))
-
-    if len(classes) > 0:
-        classes.remove(0)
-
-    if Y is not None:
-        if Y.ndim == 2:
-            Y = np.stack([(Y == cl).astype(int) for cl in classes], axis=2)
-        num_classes = Y.shape[2]
+    f, axes = plt.subplots(nrows=N, sharex=True, figsize=(16, 2 * len(X)))
+    if N == 1:
+        axes = [axes]
 
     if Y is None:
-        Y = [None] * len(X)
-
-    if ax is None:
-        if f is None:
-            f, ax = plt.subplots(
-                nrows=len(X), sharex=True, figsize=(15, 2 * len(X))
-            )
-        else:
-            ax = f.subplots(nrows=len(X), sharex=True)
-    if (len(X) == 1) & (not isinstance(ax, list)):
-        ax = [ax]
+        Y = [None for _ in range(N)]
 
     clcolors = [
         "#d62728",
@@ -85,45 +111,24 @@ def plot(X, Y=None, f=None, ax=None, global_ylim=False, saveas=None):
         "#1f77b4",
     ]
 
-    if global_ylim:
-        ylim = (np.nanmin(X), np.nanmax(X))
-        ylim = (
-            ylim[0] - (ylim[1] - ylim[0]) / 20,
-            ylim[1] + (ylim[1] - ylim[0]) / 20,
-        )
-    counter = 0
-    for Xk, Yk in zip(X, Y):
-        ax[counter].plot(Xk)
-        if global_ylim:
-            ax[counter].set_ylim(ylim[0], ylim[1])
-        if Yk is None:
-            counter += 1
-            continue
-        for clcounter in range(num_classes):
-            if Yk is not None:
-                anomaly_windows = _get_anomaly_windows(
-                    Yk[:, clcounter].astype(int)
+    for i, (Xk, Yk) in enumerate(zip(X, Y)):
+        axes[i].plot(Xk)
+        if Yk is not None:
+            for j in range(L):
+                windows = _get_event_windows(
+                    Yk[:, j].clip(0, 1).round().astype(int)
                 )
-                for anomaly_window in anomaly_windows:
-                    ax[counter].axvspan(
-                        anomaly_window[0],
-                        anomaly_window[1],
-                        alpha=0.4,
-                        color=(
-                            "r"
-                            if num_classes == 1
-                            else clcolors[clcounter % 10]
-                        ),
+                for window in windows:
+                    axes[i].axvspan(
+                        window[0], window[1], alpha=0.4, color=clcolors[j % 10]
                     )
-        counter += 1
 
-    if saveas is not None:
-        f.savefig(saveas)
+    return f, axes if (len(axes) > 1) else axes[0]
 
 
-def _get_anomaly_windows(Yk):
+def _get_event_windows(Yk):
     """
-    Find continuous anomalies labels and group them
+    Find continuous segmentation labels and group them
     """
     Yk_diff = np.diff(np.concatenate([[0], Yk, [0]]))
     start = np.argwhere(Yk_diff == 1).flatten()
