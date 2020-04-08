@@ -58,7 +58,15 @@ class Resize(_Augmenter):
         """
         Overwrite the memory-expensive base method.
         """
-        # No need to handle prob, because it must be 1.0
+        rand = np.random.RandomState(self.seed)
+        if self.prob != 1.0:
+            # it implies N == 1 and self.repeats == 1
+            if rand.uniform() > self.prob:
+                if Y is None:
+                    return X.copy(), None
+                else:
+                    return X.copy(), Y.copy()
+
         T = X.shape[1]
 
         if self.size == T:
