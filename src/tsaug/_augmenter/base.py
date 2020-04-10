@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union, overload
 
 import numpy as np
 
@@ -20,10 +20,10 @@ class _Augmenter(ABC):
 
     @classmethod
     @abstractmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple:
         return tuple()
 
-    def _get_params(self):
+    def _get_params(self) -> Dict[str, Any]:
         return {
             param_name: getattr(self, param_name)
             for param_name in self._get_param_name()
@@ -58,15 +58,15 @@ class _Augmenter(ABC):
         self._prob = p
 
     @property
-    def seed(self):
+    def seed(self) -> Optional[int]:
         return self._seed
 
     @seed.setter
-    def seed(self, s):
+    def seed(self, s: Optional[int]) -> None:
         np.random.RandomState(s)  # try setting up seed
         self._seed = s
 
-    def _augmented_series_length(self, T):
+    def _augmented_series_length(self, T: int) -> int:
         """
         Return the length (2nd dimension) of augmented series.
 
@@ -76,6 +76,20 @@ class _Augmenter(ABC):
 
         """
         return T
+
+    @overload
+    def augment(self, X: np.ndarray) -> np.ndarray:
+        ...
+
+    @overload
+    def augment(self, X: np.ndarray, Y: None) -> np.ndarray:
+        ...
+
+    @overload
+    def augment(
+        self, X: np.ndarray, Y: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        ...
 
     def augment(
         self, X: np.ndarray, Y: Optional[np.ndarray] = None
@@ -180,7 +194,7 @@ class _Augmenter(ABC):
         elif ndim_x == 2:
             X_aug = X_aug.reshape(N * self.repeats, -1)
 
-        if Y is not None:
+        if Y_aug is not None:
             if ndim_y == 1:
                 if self.repeats == 1:
                     Y_aug = Y_aug.flatten()
@@ -194,7 +208,9 @@ class _Augmenter(ABC):
         else:
             return X_aug, Y_aug
 
-    def _augment(self, X, Y):
+    def _augment(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         """
         The main part of augmentation, without pre- and post-processing.
 
@@ -246,17 +262,19 @@ class _Augmenter(ABC):
         return X_aug, Y_aug
 
     @abstractmethod
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         """
         The core of augmentation.
         """
         pass
 
-    def _copy(self):
+    def _copy(self) -> "_Augmenter":
         "Return a copy of this augmenter."
         return deepcopy(self)
 
-    def __mul__(self, m: int):
+    def __mul__(self, m: int) -> "_Augmenter":
         """
         Operator * creates an augmenter that is equivalent to running this
         augmenter for m times independently.
@@ -278,7 +296,7 @@ class _Augmenter(ABC):
         copy.repeats = copy.repeats * m
         return copy
 
-    def __matmul__(self, p: float):
+    def __matmul__(self, p: float) -> "_Augmenter":
         """
         Operator @ creates an augmenter that is equivalent to running this
         augmenter with probability p.
@@ -300,7 +318,9 @@ class _Augmenter(ABC):
         copy.prob = copy.prob * p
         return copy
 
-    def __add__(self, a):
+    def __add__(
+        self, a: Union["_Augmenter", "_AugmenterPipe"]
+    ) -> "_AugmenterPipe":
         """
         Operator + connects this augmenter with another augmenter or an
         augmenter pipe to form a (new) augmenter pipe.
@@ -333,10 +353,10 @@ class _Augmenter(ABC):
 
 
 class _AugmenterPipe:
-    def __init__(self, pipe):
+    def __init__(self, pipe: List[_Augmenter]):
         self._pipe = pipe
 
-    def __getitem__(self, ind):
+    def __getitem__(self, ind: int) -> _Augmenter:
         if isinstance(self._pipe.__getitem__(ind), _Augmenter):
             return self._pipe.__getitem__(ind)
         else:
@@ -345,7 +365,7 @@ class _AugmenterPipe:
                 "supported yet."
             )
 
-    def __setitem__(self, ind, value):
+    def __setitem__(self, ind: int, value: _Augmenter) -> None:
         if isinstance(self._pipe.__getitem__(ind), _Augmenter) and isinstance(
             value, _Augmenter
         ):
@@ -356,13 +376,13 @@ class _AugmenterPipe:
                 "supported yet."
             )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[_Augmenter]:
         return self._pipe.__iter__()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._pipe)
 
-    def summary(self, show_params=False):
+    def summary(self, show_params: bool = False) -> None:
         """
         Print summary of this augmenter pipe.
 
@@ -395,7 +415,23 @@ class _AugmenterPipe:
                 )
             )
 
-    def augment(self, X, Y=None):
+    @overload
+    def augment(self, X: np.ndarray) -> np.ndarray:
+        ...
+
+    @overload
+    def augment(self, X: np.ndarray, Y: None) -> np.ndarray:
+        ...
+
+    @overload
+    def augment(
+        self, X: np.ndarray, Y: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        ...
+
+    def augment(
+        self, X: np.ndarray, Y: Optional[np.ndarray] = None
+    ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """
         Augment time series.
 
@@ -431,7 +467,9 @@ class _AugmenterPipe:
         else:
             return X_aug, Y_aug
 
-    def __add__(self, a):
+    def __add__(
+        self, a: Union["_Augmenter", "_AugmenterPipe"]
+    ) -> "_AugmenterPipe":
         """
         Operator + connects this augmenter pipe with another augmenter or an
         augmenter pipe to form a new augmenter pipe.
