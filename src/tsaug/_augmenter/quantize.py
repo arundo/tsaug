@@ -18,7 +18,7 @@ class Quantize(_Augmenter):
           quantized to a level set of this size.
         - If list, a series (a channel if `per_channel` is True) is quantized
           to a level set whose size is sampled from this list randomly.
-        - If list, a series (a channel if `per_channel` is True) is quantized
+        - If 2-tuple, a series (a channel if `per_channel` is True) is quantized
           to a level set whose size is sampled from this interval randomly.
 
         Default: 10.
