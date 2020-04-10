@@ -177,11 +177,12 @@ class Quantize(_Augmenter):
             X_aug = X.copy()
             X_aug = X_aug.swapaxes(1, 2).reshape((N * C, T))
             for i in range(len(X_aug)):
-                bins = np.quantile(
-                    X_aug[i, :], np.arange(n_levels[i] + 1) / n_levels[i]
+                bins = np.percentile(
+                    X_aug[i, :], np.arange(n_levels[i] + 1) / n_levels[i] / 100
                 )
-                bins_center = np.quantile(
-                    X_aug[i, :], np.arange(0.5, n_levels[i]) / n_levels[i]
+                bins_center = np.percentile(
+                    X_aug[i, :],
+                    np.arange(0.5, n_levels[i]) / n_levels[i] / 100,
                 )
                 X_aug[i, :] = bins_center[
                     np.digitize(X_aug[i, :], bins).clip(0, n_levels[i] - 1),
