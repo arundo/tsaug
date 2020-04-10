@@ -191,6 +191,8 @@ class Drift(_Augmenter):
 
         drift = np.zeros((N * (C if self.per_channel else 1), T))
         for i, n in enumerate(n_drift_points):
+            if not (ind == i).any():
+                continue
             anchors = np.cumsum(
                 rand.normal(size=((ind == i).sum(), n + 2)), axis=1
             )  # type: np.ndarray
