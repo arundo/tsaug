@@ -356,6 +356,9 @@ class _AugmenterPipe:
     def __iter__(self):
         return self._pipe.__iter__()
 
+    def __len__(self):
+        return len(self._pipe)
+
     def summary(self, show_params=False):
         """
         Print summary of this augmenter pipe.
