@@ -38,9 +38,12 @@ augmenters = [
     AddNoise(per_channel=False, normalize=False),
     Convolve(repeats=M, prob=0.5),
     Convolve(window=["hann", "blackman", ("gaussian", 1)]),
+    Convolve(window=["hann", "blackman", ("gaussian", 1)], per_channel=True),
     Convolve(window=("gaussian", 1)),
     Convolve(size=(7, 11)),
+    Convolve(size=(7, 11), per_channel=True),
     Convolve(size=[7, 11]),
+    Convolve(size=[7, 11], per_channel=True),
     Convolve(per_channel=True),
     Crop(size=int(T / 2), repeats=M),
     Crop(size=(int(T / 3), T), resize=int(T / 2)),
@@ -55,6 +58,7 @@ augmenters = [
     Dropout(p=[0.01, 0.02, 0.03], size=[1, 2, 3]),
     Dropout(fill="bfill"),
     Dropout(fill="mean"),
+    Dropout(fill=0),
     Dropout(per_channel=True),
     Pool(repeats=M, prob=0.5),
     Pool(kind="max"),
@@ -64,7 +68,9 @@ augmenters = [
     Pool(per_channel=True),
     Quantize(repeats=M, prob=0.5),
     Quantize(n_levels=(5, 10)),
+    Quantize(n_levels=(5, 10), per_channel=True),
     Quantize(n_levels=[5, 6, 7]),
+    Quantize(n_levels=[5, 6, 7], per_channel=True),
     Quantize(how="quantile"),
     Quantize(how="kmeans"),
     Quantize(per_channel=True),
@@ -173,6 +179,33 @@ def test_X2_Y2(augmenter):
     Yc = Y2.copy()
     Y_aug[0, 0] = 12345
     assert np.array_equal(Yc, Y2)
+
+
+@pytest.mark.parametrize("augmenter", augmenters)
+def test_X2_Y3(augmenter):
+    """
+    2D X, 3D Y
+    """
+    X_aug, Y_aug = augmenter.augment(X2, Y3)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+    )
+    assert Y_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        L,
+    )
+
+    # check X_aug is not a view of X
+    Xc = X2.copy()
+    X_aug[0, 0] = 12345
+    assert np.array_equal(Xc, X2)
+
+    # check Y_aug is not a view of Y
+    Yc = Y3.copy()
+    Y_aug[0, 0] = 12345
+    assert np.array_equal(Yc, Y3)
 
 
 @pytest.mark.parametrize("augmenter", augmenters)
