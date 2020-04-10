@@ -1,6 +1,11 @@
 """
 This module includes functions to visualize time series and segmentation mask.
 """
+
+from typing import List, Optional, Tuple
+
+import numpy as np
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -8,10 +13,8 @@ except ImportError:
         "To use the visualization module, matplotlib>=3 must be installed."
     )
 
-import numpy as np
 
-
-def plot(X, Y=None):
+def plot(X: np.ndarray, Y: Optional[np.ndarray] = None):
     """
     Plot time series and segmentation mask.
 
@@ -124,7 +127,7 @@ def plot(X, Y=None):
     return f, axes if (len(axes) > 1) else axes[0]
 
 
-def _get_event_windows(Yk):
+def _get_event_windows(Yk: np.ndarray) -> List[Tuple[int, int]]:
     """
     Find continuous segmentation labels and group them
     """

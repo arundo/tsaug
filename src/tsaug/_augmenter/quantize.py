@@ -1,3 +1,5 @@
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 
 from .base import _Augmenter, _default_seed
@@ -56,12 +58,12 @@ class Quantize(_Augmenter):
 
     def __init__(
         self,
-        n_levels=10,
-        how="uniform",
-        per_channel=False,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        n_levels: Union[int, Tuple[int, int], List[int]] = 10,
+        how: str = "uniform",
+        per_channel: bool = False,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.n_levels = n_levels
         self.how = how
@@ -69,15 +71,15 @@ class Quantize(_Augmenter):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("n_levels", "how", "per_channel")
 
     @property
-    def n_levels(self):
+    def n_levels(self) -> Union[int, Tuple[int, int], List[int]]:
         return self._n_levels
 
     @n_levels.setter
-    def n_levels(self, n):
+    def n_levels(self, n: Union[int, Tuple[int, int], List[int]]) -> None:
         N_LEVELS_ERROR_MSG = (
             "Parameter `n_levels` must be a positive integer, "
             "a 2-tuple of positive integers representing an interval, "
@@ -107,11 +109,11 @@ class Quantize(_Augmenter):
         self._n_levels = n
 
     @property
-    def how(self):
+    def how(self) -> str:
         return self._how
 
     @how.setter
-    def how(self, h):
+    def how(self, h: str) -> None:
         HOW_ERROR_MSG = "Parameter `how` must be one of 'uniform', 'quantile', and 'kmeans'."
         if not isinstance(h, str):
             raise TypeError(HOW_ERROR_MSG)
@@ -120,16 +122,18 @@ class Quantize(_Augmenter):
         self._how = h
 
     @property
-    def per_channel(self):
+    def per_channel(self) -> bool:
         return self._per_channel
 
     @per_channel.setter
-    def per_channel(self, p):
+    def per_channel(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         rand = np.random.RandomState(self.seed)
         N, T, C = X.shape
 

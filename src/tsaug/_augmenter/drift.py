@@ -1,3 +1,5 @@
+from typing import Callable, List, Optional, Tuple, Union
+
 import numpy as np
 from scipy.interpolate import CubicSpline
 
@@ -62,14 +64,14 @@ class Drift(_Augmenter):
 
     def __init__(
         self,
-        max_drift=0.5,
-        n_drift_points=3,
-        kind="additive",
-        per_channel=True,
-        normalize=True,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        max_drift: Union[float, Tuple[float, float]] = 0.5,
+        n_drift_points: Union[int, List[int]] = 3,
+        kind: str = "additive",
+        per_channel: bool = True,
+        normalize: bool = True,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.max_drift = max_drift
         self.n_drift_points = n_drift_points
@@ -79,7 +81,7 @@ class Drift(_Augmenter):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return (
             "max_drift",
             "n_drift_points",
@@ -89,11 +91,11 @@ class Drift(_Augmenter):
         )
 
     @property
-    def max_drift(self):
+    def max_drift(self) -> Union[float, Tuple[float, float]]:
         return self._max_drift
 
     @max_drift.setter
-    def max_drift(self, v):
+    def max_drift(self, v: Union[float, Tuple[float, float]]) -> None:
         MAX_DRIFT_ERROR_MSG = (
             "Parameter `max_drift` must be a non-negative number "
             "or a 2-tuple of non-negative numbers representing an interval. "
@@ -117,11 +119,11 @@ class Drift(_Augmenter):
         self._max_drift = v
 
     @property
-    def n_drift_points(self):
+    def n_drift_points(self) -> Union[int, List[int]]:
         return self._n_drift_points
 
     @n_drift_points.setter
-    def n_drift_points(self, n):
+    def n_drift_points(self, n: Union[int, List[int]]) -> None:
         N_DRIFT_POINTS_ERROR_MSG = (
             "Parameter `n_drift_points` must be a positive integer "
             "or a list of positive integers."
@@ -141,31 +143,31 @@ class Drift(_Augmenter):
         self._n_drift_points = n
 
     @property
-    def per_channel(self):
+    def per_channel(self) -> bool:
         return self._per_channel
 
     @per_channel.setter
-    def per_channel(self, p):
+    def per_channel(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
     @property
-    def normalize(self):
+    def normalize(self) -> bool:
         return self._normalize
 
     @normalize.setter
-    def normalize(self, p):
+    def normalize(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `normalize` must be boolean.")
         self._normalize = p
 
     @property
-    def kind(self):
+    def kind(self) -> str:
         return self._kind
 
     @kind.setter
-    def kind(self, k):
+    def kind(self, k: str) -> None:
         if not isinstance(k, str):
             raise TypeError(
                 "Parameter `kind` must be either 'additive' or 'multiplicative'."
@@ -176,7 +178,9 @@ class Drift(_Augmenter):
             )
         self._kind = k
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
 

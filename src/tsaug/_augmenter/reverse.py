@@ -1,3 +1,7 @@
+from typing import Optional, Tuple
+
+import numpy as np
+
 from .base import _Augmenter, _default_seed
 
 
@@ -21,14 +25,21 @@ class Reverse(_Augmenter):
 
     """
 
-    def __init__(self, repeats=1, prob=1.0, seed=_default_seed):
+    def __init__(
+        self,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
+    ):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return tuple()
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         X_aug = X[:, ::-1, :].copy()  # type: np.ndarray
 
         if Y is None:

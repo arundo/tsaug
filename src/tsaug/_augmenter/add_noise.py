@@ -1,3 +1,5 @@
+from typing import Callable, List, Optional, Tuple, Union
+
 import numpy as np
 
 from .base import _Augmenter, _default_seed
@@ -72,15 +74,15 @@ class AddNoise(_Augmenter):
 
     def __init__(
         self,
-        loc=0.0,
-        scale=0.1,
-        distr="gaussian",
-        kind="additive",
-        per_channel=True,
-        normalize=True,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        loc: Union[float, Tuple[float, float], List[float]] = 0.0,
+        scale: Union[float, Tuple[float, float], List[float]] = 0.1,
+        distr: str = "gaussian",
+        kind: str = "additive",
+        per_channel: bool = True,
+        normalize: bool = True,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.loc = loc
         self.scale = scale
@@ -91,15 +93,15 @@ class AddNoise(_Augmenter):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("loc", "scale", "distr", "kind", "per_channel", "normalize")
 
     @property
-    def loc(self):
+    def loc(self) -> Union[float, Tuple[float, float], List[float]]:
         return self._loc
 
     @loc.setter
-    def loc(self, n):
+    def loc(self, n: Union[float, Tuple[float, float], List[float]]) -> None:
         LOC_ERROR_MSG = (
             "Parameter `loc` must be a number, "
             "a 2-tuple of numbers representing an interval, "
@@ -125,11 +127,11 @@ class AddNoise(_Augmenter):
         self._loc = n
 
     @property
-    def scale(self):
+    def scale(self) -> Union[float, Tuple[float, float], List[float]]:
         return self._scale
 
     @scale.setter
-    def scale(self, n):
+    def scale(self, n: Union[float, Tuple[float, float], List[float]]) -> None:
         SCALE_ERROR_MSG = (
             "Parameter `scale` must be a non-negative number, "
             "a 2-tuple of non-negative numbers representing an interval, "
@@ -161,11 +163,11 @@ class AddNoise(_Augmenter):
         self._scale = n
 
     @property
-    def distr(self):
+    def distr(self) -> str:
         return self._distr
 
     @distr.setter
-    def distr(self, d):
+    def distr(self, d: str) -> None:
         DISTR_ERROR_MSG = (
             "Parameter `distr` must be one of 'gaussian', 'laplace', and "
             "'uniform'."
@@ -177,11 +179,11 @@ class AddNoise(_Augmenter):
         self._distr = d
 
     @property
-    def kind(self):
+    def kind(self) -> str:
         return self._kind
 
     @kind.setter
-    def kind(self, k):
+    def kind(self, k: str) -> None:
         if not isinstance(k, str):
             raise TypeError(
                 "Parameter `kind` must be either 'additive' or 'multiplicative'."
@@ -193,35 +195,39 @@ class AddNoise(_Augmenter):
         self._kind = k
 
     @property
-    def per_channel(self):
+    def per_channel(self) -> bool:
         return self._per_channel
 
     @per_channel.setter
-    def per_channel(self, p):
+    def per_channel(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
     @property
-    def normalize(self):
+    def normalize(self) -> bool:
         return self._normalize
 
     @normalize.setter
-    def normalize(self, p):
+    def normalize(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `normalize` must be boolean.")
         self._normalize = p
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
         if self.distr == "gaussian":
-            gen_noise = lambda size: rand.normal(0.0, 1.0, size=size)
+            gen_noise = lambda size: rand.normal(
+                0.0, 1.0, size=size
+            )  # type: Callable[[Tuple[int, int, int]], np.ndarray]
         elif self.distr == "laplace":
             gen_noise = lambda size: rand.laplace(0.0, 1.0, size=size)
         else:
             gen_noise = lambda size: rand.uniform(
-                low=-3 ** 0.5, high=3 ** 0.5, size=size
+                low=-(3 ** 0.5), high=3 ** 0.5, size=size
             )
 
         if isinstance(self.loc, (float, int)):

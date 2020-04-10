@@ -1,3 +1,5 @@
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 from scipy.ndimage.filters import convolve1d
 from scipy.signal import get_window
@@ -55,12 +57,12 @@ class Convolve(_Augmenter):
 
     def __init__(
         self,
-        window="hann",
-        size=7,
-        per_channel=False,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        window: Union[str, Tuple, List[Union[str, Tuple]]] = "hann",
+        size: Union[int, Tuple[int, int], List[int]] = 7,
+        per_channel: bool = False,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.window = window
         self.size = size
@@ -68,15 +70,15 @@ class Convolve(_Augmenter):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("window", "size", "per_channel")
 
     @property
-    def window(self):
+    def window(self) -> Union[str, Tuple, List[Union[str, Tuple]]]:
         return self._window
 
     @window.setter
-    def window(self, w):
+    def window(self, w: Union[str, Tuple, List[Union[str, Tuple]]]) -> None:
         WINDOW_ERROR_MSG = (
             "Parameter `window` must be a str or a tuple that can pass to "
             "`scipy.signal.get_window`, or a list of such objects. See "
@@ -105,11 +107,11 @@ class Convolve(_Augmenter):
         self._window = w
 
     @property
-    def size(self):
+    def size(self) -> Union[int, Tuple[int, int], List[int]]:
         return self._size
 
     @size.setter
-    def size(self, n):
+    def size(self, n: Union[int, Tuple[int, int], List[int]]) -> None:
         SIZE_ERROR_MSG = (
             "Parameter `size` must be a positive integer, "
             "a 2-tuple of positive integers representing an interval, "
@@ -139,16 +141,18 @@ class Convolve(_Augmenter):
         self._size = n
 
     @property
-    def per_channel(self):
+    def per_channel(self) -> bool:
         return self._per_channel
 
     @per_channel.setter
-    def per_channel(self, p):
+    def per_channel(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
 

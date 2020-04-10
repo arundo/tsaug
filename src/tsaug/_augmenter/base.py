@@ -20,7 +20,7 @@ class _Augmenter(ABC):
 
     @classmethod
     @abstractmethod
-    def _get_param_name(cls) -> Tuple:
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return tuple()
 
     def _get_params(self) -> Dict[str, Any]:
