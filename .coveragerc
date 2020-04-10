@@ -2,9 +2,7 @@
 show_missing = True
 omit = src/tsaug/visualization/*
 exclude_lines =
-    pragma: no cover
     raise
-    warnings.warn
     pass
     @property
-    @overload
+    @abstractmethod
