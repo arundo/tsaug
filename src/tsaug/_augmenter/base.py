@@ -340,7 +340,10 @@ class _AugmenterPipe:
         if isinstance(self._pipe.__getitem__(ind), _Augmenter):
             return self._pipe.__getitem__(ind)
         else:
-            return _AugmenterPipe(self._pipe.__getitem__(ind))
+            raise NotImplementedError(
+                "Getting multiple augmenters in an augmenter pipe is not "
+                "supported yet."
+            )
 
     def __setitem__(self, ind, value):
         if isinstance(self._pipe.__getitem__(ind), _Augmenter) and isinstance(
