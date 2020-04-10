@@ -14,7 +14,9 @@ except ImportError:
     )
 
 
-def plot(X: np.ndarray, Y: Optional[np.ndarray] = None):
+def plot(
+    X: np.ndarray, Y: Optional[np.ndarray] = None
+) -> Tuple[plt.Figure, plt.Axes]:
     """
     Plot time series and segmentation mask.
 
