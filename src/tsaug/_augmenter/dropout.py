@@ -42,8 +42,6 @@ class Dropout(_Augmenter):
         - If 'ffill', fill with the last previous value that is not dropped.
         - If 'bfill', fill with the first next value that is not dropped.
         - If 'mean', fill with the mean value of this channel in this series.
-        - If 'median', fill with the median value of this channel in this
-          series.
         - If float, fill with this value.
 
         Default: 'ffill'.
@@ -169,11 +167,11 @@ class Dropout(_Augmenter):
     @fill.setter
     def fill(self, f):
         FILL_ERROR_MSG = (
-            "Paramter `fill` must be a number or one of 'ffill', 'bfill', "
-            "'mean', and 'median'."
+            "Paramter `fill` must be a number or one of 'ffill', 'bfill', and "
+            "'mean'."
         )
         if isinstance(f, str):
-            if f not in ("ffill", "bfill", "mean", "median"):
+            if f not in ("ffill", "bfill", "mean"):
                 raise ValueError(FILL_ERROR_MSG)
         elif not isinstance(f, (int, float)):
             raise TypeError(FILL_ERROR_MSG)
@@ -214,12 +212,8 @@ class Dropout(_Augmenter):
 
         X_aug = X.copy()
         X_aug = X_aug.swapaxes(1, 2).reshape(N * C, T)
-        if isinstance(self.fill, str) and (self.fill in ("mean", "median")):
-            fill_value = (
-                X_aug.mean(axis=1)
-                if (self.fill == "mean")
-                else X_aug.median(axis=1)
-            )
+        if isinstance(self.fill, str) and (self.fill == "mean"):
+            fill_value = X_aug.mean(axis=1)
         for s in size:
             # sample dropout blocks
             if self.per_channel:
@@ -245,9 +239,7 @@ class Dropout(_Augmenter):
                     j0 = np.repeat(ind[:, 1], s) + s
                     j1 = j0 - np.tile(np.arange(1, s + 1), len(ind))
                     X_aug[i, j1] = X_aug[i, j0]
-                elif isinstance(self.fill, str) and (
-                    self.fill in ("mean", "median")
-                ):
+                elif isinstance(self.fill, str) and (self.fill == "mean"):
                     i = np.repeat(ind[:, 0], s)
                     j = np.repeat(ind[:, 1], s) + np.tile(
                         np.arange(1, s + 1), len(ind)
