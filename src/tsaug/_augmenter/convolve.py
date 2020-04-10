@@ -152,14 +152,20 @@ class Convolve(_Augmenter):
         N, T, C = X.shape
         rand = np.random.RandomState(self.seed)
 
-        if isinstance(self.window, str):
-            window_type = np.array([self.window for _ in range(N * C)])
+        if isinstance(self.window, (str, tuple)):
+            window_type = [self.window for _ in range(N * C)]
         else:
             if self.per_channel:
-                window_type = rand.choice(self.window, N * C)
+                window_type = [
+                    self.window[i]
+                    for i in rand.choice(len(self.window), N * C)
+                ]
             else:
-                window_type = rand.choice(self.window, N)
-                window_type = np.repeat(window_type, C)
+                window_type = [
+                    self.window[i]
+                    for i in rand.choice(len(self.window), N)
+                    for _ in range(C)
+                ]
 
         if isinstance(self.size, int):
             window_size = np.array([self.size for _ in range(N * C)])
@@ -182,11 +188,17 @@ class Convolve(_Augmenter):
         X_aug = X.copy()
         X_aug = X_aug.swapaxes(1, 2).reshape(N * C, T)
         for ws in np.unique(window_size):
-            for wt in np.unique(window_type):
+            for wt in set(window_type):
                 window = get_window(window=wt, Nx=ws, fftbins=False)
-                X_aug[(window_size == ws) & (window_type == wt), :] = (
+                X_aug[
+                    (window_size == ws) & [w == wt for w in window_type], :
+                ] = (
                     convolve1d(
-                        X_aug[(window_size == ws) & (window_type == wt), :],
+                        X_aug[
+                            (window_size == ws)
+                            & [w == wt for w in window_type],
+                            :,
+                        ],
                         window,
                         axis=1,
                     )
