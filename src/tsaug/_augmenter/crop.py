@@ -1,3 +1,5 @@
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 
 from .base import _Augmenter, _default_seed
@@ -43,22 +45,27 @@ class Crop(_Augmenter):
     """
 
     def __init__(
-        self, size, resize=None, repeats=1, prob=1.0, seed=_default_seed
+        self,
+        size: Union[int, Tuple[int, int], List[int]],
+        resize: Optional[int] = None,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.size = size
         self.resize = resize
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("size", "resize")
 
     @property
-    def size(self):
+    def size(self) -> Union[int, Tuple[int, int], List[int]]:
         return self._size
 
     @size.setter
-    def size(self, n):
+    def size(self, n: Union[int, Tuple[int, int], List[int]]) -> None:
         SIZE_ERROR_MSG = (
             "Parameter `size` must be a positive integer, "
             "a 2-tuple of positive integers representing an interval, "
@@ -88,18 +95,18 @@ class Crop(_Augmenter):
         self._size = n
 
     @property
-    def resize(self):
+    def resize(self) -> Optional[int]:
         return self._resize
 
     @resize.setter
-    def resize(self, s):
+    def resize(self, s: Optional[int]) -> None:
         if (s is not None) and (not isinstance(s, int)):
             raise TypeError("Parameter `resize` must be a positive integer.")
         if (s is not None) and (s <= 0):
             raise ValueError("Parameter `resize` must be a positive integer.")
         self._resize = s
 
-    def _augmented_series_length(self, T):
+    def _augmented_series_length(self, T: int) -> int:
         if isinstance(self.size, int):
             size = [self.size]
         elif isinstance(self.size, tuple):
@@ -120,7 +127,9 @@ class Crop(_Augmenter):
 
         return resize
 
-    def _augment(self, X, Y):
+    def _augment(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         """
         Overwrite the memory-expensive base method.
         """
@@ -179,7 +188,7 @@ class Crop(_Augmenter):
                     :,
                 ].reshape((n, s, C))
             )
-            if Y is not None:
+            if (Y is not None) and (Y_aug is not None):
                 Y_aug[crop_size == s, :, :] = resizer.augment(
                     Y[
                         np.repeat(
@@ -200,6 +209,8 @@ class Crop(_Augmenter):
 
         return X_aug, Y_aug
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         "Method _augment is overwritten, therefore this method is not needed."
         pass

@@ -1,3 +1,5 @@
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 
 from .base import _Augmenter, _default_seed
@@ -67,13 +69,13 @@ class Dropout(_Augmenter):
 
     def __init__(
         self,
-        p=0.05,
-        size=1,
-        fill="ffill",
-        per_channel=False,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        p: Union[float, Tuple[float, float], List[float]] = 0.05,
+        size: Union[int, Tuple[int, int], List[int]] = 1,
+        fill: Union[str, float] = "ffill",
+        per_channel: bool = False,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.p = p
         self.size = size
@@ -82,15 +84,15 @@ class Dropout(_Augmenter):
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("p", "size", "fill", "per_channel")
 
     @property
-    def p(self):
+    def p(self) -> Union[float, Tuple[float, float], List[float]]:
         return self._p
 
     @p.setter
-    def p(self, n):
+    def p(self, n: Union[float, Tuple[float, float], List[float]]) -> None:
         P_ERROR_MSG = (
             "Parameter `p` must be a non-negative number, "
             "a 2-tuple of non-negative numbers representing an interval, "
@@ -127,11 +129,11 @@ class Dropout(_Augmenter):
         self._p = n
 
     @property
-    def size(self):
+    def size(self) -> Union[int, Tuple[int, int], List[int]]:
         return self._size
 
     @size.setter
-    def size(self, n):
+    def size(self, n: Union[int, Tuple[int, int], List[int]]) -> None:
         SIZE_ERROR_MSG = (
             "Parameter `size` must be a positive integer, "
             "a 2-tuple of positive integers representing an interval, "
@@ -161,11 +163,11 @@ class Dropout(_Augmenter):
         self._size = n
 
     @property
-    def fill(self):
+    def fill(self) -> Union[str, float]:
         return self._fill
 
     @fill.setter
-    def fill(self, f):
+    def fill(self, f: Union[str, float]) -> None:
         FILL_ERROR_MSG = (
             "Paramter `fill` must be a number or one of 'ffill', 'bfill', and "
             "'mean'."
@@ -179,16 +181,18 @@ class Dropout(_Augmenter):
         self._fill = f
 
     @property
-    def per_channel(self):
+    def per_channel(self) -> bool:
         return self._per_channel
 
     @per_channel.setter
-    def per_channel(self, p):
+    def per_channel(self, p: bool) -> None:
         if not isinstance(p, bool):
             raise TypeError("Paremeter `per_channel` must be boolean.")
         self._per_channel = p
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         rand = np.random.RandomState(self.seed)
         N, T, C = X.shape
 

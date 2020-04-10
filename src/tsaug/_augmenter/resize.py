@@ -1,3 +1,5 @@
+from typing import Optional, Tuple
+
 import numpy as np
 
 from .base import _Augmenter, _default_seed
@@ -31,30 +33,38 @@ class Resize(_Augmenter):
 
     """
 
-    def __init__(self, size, repeats=1, prob=1.0, seed=_default_seed):
+    def __init__(
+        self,
+        size: int,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
+    ):
         self.size = size
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("size",)
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self._size
 
     @size.setter
-    def size(self, s):
+    def size(self, s: int) -> None:
         if not isinstance(s, int):
             raise TypeError("Parameter `size` must be a positive integer.")
         if s <= 0:
             raise ValueError("Parameter `size` must be a positive integer.")
         self._size = s
 
-    def _augmented_series_length(self, T):
+    def _augmented_series_length(self, T: int) -> int:
         return self.size
 
-    def _augment(self, X, Y):
+    def _augment(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         """
         Overwrite the memory-expensive base method.
         """
@@ -111,6 +121,8 @@ class Resize(_Augmenter):
 
         return X_aug, Y_aug
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         "Method _augment is overwritten, therefore this method is not needed."
         pass

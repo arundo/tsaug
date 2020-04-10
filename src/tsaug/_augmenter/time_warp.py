@@ -1,3 +1,5 @@
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 from scipy.interpolate import PchipInterpolator, interp1d
 
@@ -46,26 +48,26 @@ class TimeWarp(_Augmenter):
 
     def __init__(
         self,
-        n_speed_change=3,
-        max_speed_ratio=3.0,
-        repeats=1,
-        prob=1.0,
-        seed=_default_seed,
+        n_speed_change: int = 3,
+        max_speed_ratio: Union[float, Tuple[float, float], List[float]] = 3.0,
+        repeats: int = 1,
+        prob: float = 1.0,
+        seed: Optional[int] = _default_seed,
     ):
         self.n_speed_change = n_speed_change
         self.max_speed_ratio = max_speed_ratio
         super().__init__(repeats=repeats, prob=prob, seed=seed)
 
     @classmethod
-    def _get_param_name(cls):
+    def _get_param_name(cls) -> Tuple[str, ...]:
         return ("n_speed_change",)
 
     @property
-    def n_speed_change(self):
+    def n_speed_change(self) -> int:
         return self._n_speed_change
 
     @n_speed_change.setter
-    def n_speed_change(self, n):
+    def n_speed_change(self, n: int) -> None:
         if not isinstance(n, int):
             raise TypeError(
                 "Parameter `n_speed_change` must be a positive integer."
@@ -77,11 +79,15 @@ class TimeWarp(_Augmenter):
         self._n_speed_change = n
 
     @property
-    def max_speed_ratio(self):
+    def max_speed_ratio(
+        self,
+    ) -> Union[float, Tuple[float, float], List[float]]:
         return self._max_speed_ratio
 
     @max_speed_ratio.setter
-    def max_speed_ratio(self, n):
+    def max_speed_ratio(
+        self, n: Union[float, Tuple[float, float], List[float]]
+    ) -> None:
         MAX_SPEED_RATIO_ERROR_MSG = (
             "Parameter `max_speed_ratio` must be a number greater than 1.0, "
             "a 2-tuple of such numbers representing an interval, "
@@ -112,7 +118,9 @@ class TimeWarp(_Augmenter):
             raise ValueError(MAX_SPEED_RATIO_ERROR_MSG)
         self._max_speed_ratio = n
 
-    def _augment_core(self, X, Y):
+    def _augment_core(
+        self, X: np.ndarray, Y: Optional[np.ndarray]
+    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         rand = np.random.RandomState(self.seed)
         N, T, C = X.shape
         if Y is not None:
