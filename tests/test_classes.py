@@ -37,19 +37,42 @@ augmenters = [
     AddNoise(kind="multiplicative"),
     AddNoise(per_channel=False, normalize=False),
     Convolve(repeats=M, prob=0.5),
-    Convolve(window=["hann", "blackman"]),
+    Convolve(window=["hann", "blackman", ("gaussian", 1)]),
     Convolve(window=("gaussian", 1)),
     Convolve(size=(7, 11)),
     Convolve(size=[7, 11]),
     Convolve(per_channel=True),
-    Crop(size=100),
-    Drift(),
-    Dropout(),
-    Pool(),
-    Quantize(),
-    Resize(size=100),
-    Reverse(),
-    TimeWarp(),
+    Crop(size=int(T / 2), repeats=M),
+    Crop(size=(int(T / 3), T), resize=int(T / 2)),
+    Crop(size=[int(T / 3), T], resize=int(T / 2)),
+    Drift(repeats=M, prob=0.5),
+    Drift(max_drift=(0.5, 1.0)),
+    Drift(n_drift_points=[3, 8]),
+    Drift(kind="multiplicative"),
+    Drift(per_channel=False, normalize=False),
+    Dropout(repeats=M, prob=0.5),
+    Dropout(p=(0.01, 0.1), size=(1, 5)),
+    Dropout(p=[0.01, 0.02, 0.03], size=[1, 2, 3]),
+    Dropout(fill="bfill"),
+    Dropout(fill="mean"),
+    Dropout(per_channel=True),
+    Pool(repeats=M, prob=0.5),
+    Pool(kind="max"),
+    Pool(kind="min"),
+    Pool(size=(2, 8)),
+    Pool(size=[2, 4, 6]),
+    Pool(per_channel=True),
+    Quantize(repeats=M, prob=0.5),
+    Quantize(n_levels=(5, 10)),
+    Quantize(n_levels=[5, 6, 7]),
+    Quantize(how="quantile"),
+    Quantize(how="kmeans"),
+    Quantize(per_channel=True),
+    Resize(size=int(T / 2), repeats=M, prob=1.0),
+    Reverse(repeats=M, prob=0.5),
+    TimeWarp(repeats=M, prob=0.5),
+    TimeWarp(max_speed_ratio=[3, 4, 5]),
+    TimeWarp(max_speed_ratio=(3, 5)),
 ]
 
 
@@ -60,9 +83,14 @@ def test_X1_Y0(augmenter):
     """
     X_aug = augmenter.augment(X1)
     if augmenter.repeats == 1:
-        assert X_aug.shape == (T,)
+        assert X_aug.shape == (
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
     else:
-        assert X_aug.shape == (M, T)
+        assert X_aug.shape == (
+            M,
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
 
     # check X_aug is not a view of X
     Xc = X1.copy()
@@ -77,11 +105,21 @@ def test_X1_Y1(augmenter):
     """
     X_aug, Y_aug = augmenter.augment(X1, Y1)
     if augmenter.repeats == 1:
-        assert X_aug.shape == (T,)
-        assert Y_aug.shape == (T,)
+        assert X_aug.shape == (
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
+        assert Y_aug.shape == (
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
     else:
-        assert X_aug.shape == (M, T)
-        assert Y_aug.shape == (M, T)
+        assert X_aug.shape == (
+            M,
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
+        assert Y_aug.shape == (
+            M,
+            T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        )
 
     # check X_aug is not a view of X
     Xc = X1.copy()
@@ -100,7 +138,10 @@ def test_X2_Y0(augmenter):
     2D X, no Y
     """
     X_aug = augmenter.augment(X2)
-    assert X_aug.shape == (N * augmenter.repeats, T)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+    )
 
     # check X_aug is not a view of X
     Xc = X2.copy()
@@ -114,8 +155,14 @@ def test_X2_Y2(augmenter):
     2D X, 2D Y
     """
     X_aug, Y_aug = augmenter.augment(X2, Y2)
-    assert X_aug.shape == (N * augmenter.repeats, T)
-    assert Y_aug.shape == (N * augmenter.repeats, T)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+    )
+    assert Y_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+    )
 
     # check X_aug is not a view of X
     Xc = X2.copy()
@@ -134,7 +181,11 @@ def test_X3_Y0(augmenter):
     3D X, no Y
     """
     X_aug = augmenter.augment(X3)
-    assert X_aug.shape == (N * augmenter.repeats, T, C)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        C,
+    )
 
     # check X_aug is not a view of X
     Xc = X3.copy()
@@ -148,8 +199,15 @@ def test_X3_Y2(augmenter):
     3D X, 2D Y
     """
     X_aug, Y_aug = augmenter.augment(X3, Y2)
-    assert X_aug.shape == (N * augmenter.repeats, T, C)
-    assert Y_aug.shape == (N * augmenter.repeats, T)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        C,
+    )
+    assert Y_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+    )
 
     # check X_aug is not a view of X
     Xc = X3.copy()
@@ -168,8 +226,16 @@ def test_X3_Y3(augmenter):
     3D X, 3D Y
     """
     X_aug, Y_aug = augmenter.augment(X3, Y3)
-    assert X_aug.shape == (N * augmenter.repeats, T, C)
-    assert Y_aug.shape == (N * augmenter.repeats, T, L)
+    assert X_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        C,
+    )
+    assert Y_aug.shape == (
+        N * augmenter.repeats,
+        T if not isinstance(augmenter, (Resize, Crop)) else int(T / 2),
+        L,
+    )
 
     # check X_aug is not a view of X
     Xc = X3.copy()
