@@ -6,8 +6,10 @@ Version 0.2.0 (Apr 10, 2020)
 ===================================
 
 - Refactored augmenters
-- Brand new API
-- Brand new documentation
+- Removed All augmenter functions, only keep augmenter classes
+- Removed operator + and @ for augmenter pipes, only keeps them for augmenters
+- Added visualization module
+- Created new documentation
 
 Version 0.1.1 (Feb 18, 2020)
 ===================================
