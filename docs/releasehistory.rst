@@ -10,6 +10,7 @@ Version 0.2.0 (Apr 10, 2020)
 - Removed operator + and @ for augmenter pipes, only keeps them for augmenters
 - Added visualization module
 - Created new documentation
+- Better developer support
 
 Version 0.1.1 (Feb 18, 2020)
 ===================================
