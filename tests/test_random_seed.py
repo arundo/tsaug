@@ -17,7 +17,7 @@ from tsaug import (
 augmenters = [
     AddNoise(),
     Convolve(size=(7, 10)) * 10,
-    Crop(size=50),
+    Crop(size=10),
     Drift(),
     Dropout(),
     Pool(size=[2, 4, 8]) * 10,
@@ -27,7 +27,7 @@ augmenters = [
 ]
 
 N = 10
-T = 100
+T = 1000
 C = 3
 L = 2
 M = 4
