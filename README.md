@@ -2,11 +2,14 @@
 
 [![Build Status](https://travis-ci.com/arundo/tsaug.svg?branch=master)](https://travis-ci.com/arundo/tsaug)
 [![Docs](https://readthedocs.com/projects/arundo-tsaug/badge/?version=latest)](https://arundo-tsaug.readthedocs-hosted.com/en/latest/)
+[![Coverage Status](https://coveralls.io/repos/github/arundo/tsaug/badge.svg?branch=master&service=github)](https://coveralls.io/github/arundo/tsaug?branch=master)
 [![PyPI](https://img.shields.io/pypi/v/tsaug)](https://pypi.org/project/tsaug/)
+[![Downloads](https://pepy.tech/badge/tsaug)](https://pepy.tech/project/tsaug)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-`tsaug` is a Python package for time series augmentation. It offers a set of 
-augmentation methods for time series with unified APIs, as well as operators to
-connect multiple augmentors into a pipeline.
+`tsaug` is a Python package for time series augmentation. It offers a set of
+augmentation methods for time series, as well as a simple API to connect
+multiple augmenters into a pipeline.
 
 See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 
@@ -14,22 +17,28 @@ See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
 
 Prerequisites: Python 3.5 or later.
 
-It is recommended to use **pip** for installation.
+It is recommended to install the most recent **stable** release of tsaug from PyPI.
 
 ```shell
 pip install tsaug
 ```
 
-Alternatively, you could install from source code:
+Alternatively, you could install from source code. This will give you the **latest**, but unstable, version of tsaug.
 
 ```shell
 git clone https://github.com/arundo/tsaug.git
 cd tsaug/
+git checkout develop
 pip install ./
 ```
 
 ## Examples
-Please see [Quick Start](https://arundo-tsaug.readthedocs-hosted.com/en/latest/quickstart.html) for some examples.
+A first-time user may start with two examples:
+
+- [Augment a batch of multivariate time series](https://arundo-tsaug.readthedocs-hosted.com/en/latest/quickstart.html#augment-a-batch-of-multivariate-time-series)
+- [Augment a 2-channel audio sequence](https://arundo-tsaug.readthedocs-hosted.com/en/latest/quickstart.html#augment-a-2-channel-audio-sequence)
+
+Examples of every individual augmenter can be found [here](https://arundo-tsaug.readthedocs-hosted.com/en/latest/notebook/Examples%20of%20augmenters.html)
 
 For full references of implemented augmentation methods, please refer to [References](https://arundo-tsaug.readthedocs-hosted.com/en/latest/references.html).
 
@@ -39,6 +48,9 @@ Pull requests are welcome. For major changes, please open an issue first to
 discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+Please see [Contributing](https://arundo-tsaug.readthedocs-hosted.com/en/stable/developer.html) for more details.
+
 
 ## License
 
