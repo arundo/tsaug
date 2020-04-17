@@ -10,7 +10,7 @@ See https://tsaug.readthedocs.io for complete documentation.
 
 """
 
-__version__ = "0.2"
+__version__ = "0.2.1"
 
 from ._augmenter.add_noise import AddNoise
 from ._augmenter.convolve import Convolve

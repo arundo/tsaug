@@ -30,7 +30,7 @@ author = "Arundo Analytics, Inc."
 # The full version, including alpha/beta/rc tags
 version = "0.2"
 
-release = "0.2.0"
+release = "0.2.1"
 
 
 # -- General configuration ---------------------------------------------------

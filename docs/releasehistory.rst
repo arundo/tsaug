@@ -2,6 +2,10 @@
 Release History
 ***************
 
+Version 0.2.1 (Apr 16, 2020)
+===================================
+- Migrated the documentation to new host
+
 Version 0.2.0 (Apr 10, 2020)
 ===================================
 
