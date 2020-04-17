@@ -99,7 +99,7 @@ This is a guideline of managing branches and releases of tsaug.
     - An increment of patch version Z (0.Y.[Z+1]) introduces modifications that do not change the API, for example bug fix, minor changes to documentation, etc.
     - A new version is released when a set of modifications are accumulated, depending on the importance of the new functionalities and urgency of the bug fix.
     - A release is published to `PyPI <https://pypi.org/project/tsaug/>`_ and `GitHub <https://github.com/arundo/tsaug/releases>`_.
-    - The `stable documentation <https://arundo-tsaug.readthedocs-hosted.com/en/stable/>`_ corresponds to the most recent release.
+    - The `stable documentation <https://tsaug.readthedocs.io//en/stable/>`_ corresponds to the most recent release.
 
 - Pre-release versions
 
@@ -123,5 +123,5 @@ This is a guideline of managing branches and releases of tsaug.
       .. attention::
         If the modification should also be included in the next "major" release (0.[Y+1].0), a separate pull request to merge the modifications into branch **develop** should be opened.
 
-    - The `latest documentation <https://arundo-tsaug.readthedocs-hosted.com/en/latest/>`_ corresponds to the most recent pre-release in branch **develop**.
+    - The `latest documentation <https://tsaug.readthedocs.io/en/latest/>`_ corresponds to the most recent pre-release in branch **develop**.
 

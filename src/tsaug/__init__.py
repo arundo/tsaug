@@ -6,7 +6,7 @@ tsaug
 augmentation methods for time series, as well as a simple API to connect
 multiple augmenters into a pipeline.
 
-See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
+See https://tsaug.readthedocs.io for complete documentation.
 
 """
 
