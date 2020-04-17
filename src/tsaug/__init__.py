@@ -6,11 +6,11 @@ tsaug
 augmentation methods for time series, as well as a simple API to connect
 multiple augmenters into a pipeline.
 
-See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
+See https://tsaug.readthedocs.io for complete documentation.
 
 """
 
-__version__ = "0.2"
+__version__ = "0.2.1"
 
 from ._augmenter.add_noise import AddNoise
 from ._augmenter.convolve import Convolve

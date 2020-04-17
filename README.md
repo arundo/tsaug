@@ -1,7 +1,7 @@
 # tsaug
 
 [![Build Status](https://travis-ci.com/arundo/tsaug.svg?branch=master)](https://travis-ci.com/arundo/tsaug)
-[![Docs](https://readthedocs.com/projects/arundo-tsaug/badge/?version=latest)](https://arundo-tsaug.readthedocs-hosted.com/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/tsaug/badge/?version=stable)](https://tsaug.readthedocs.io/en/stable/?badge=stable)
 [![Coverage Status](https://coveralls.io/repos/github/arundo/tsaug/badge.svg?branch=master&service=github)](https://coveralls.io/github/arundo/tsaug?branch=master)
 [![PyPI](https://img.shields.io/pypi/v/tsaug)](https://pypi.org/project/tsaug/)
 [![Downloads](https://pepy.tech/badge/tsaug)](https://pepy.tech/project/tsaug)
@@ -11,7 +11,7 @@
 augmentation methods for time series, as well as a simple API to connect
 multiple augmenters into a pipeline.
 
-See https://arundo-tsaug.readthedocs-hosted.com complete documentation.
+See https://tsaug.readthedocs.io complete documentation.
 
 ## Installation
 
@@ -35,12 +35,12 @@ pip install ./
 ## Examples
 A first-time user may start with two examples:
 
-- [Augment a batch of multivariate time series](https://arundo-tsaug.readthedocs-hosted.com/en/latest/quickstart.html#augment-a-batch-of-multivariate-time-series)
-- [Augment a 2-channel audio sequence](https://arundo-tsaug.readthedocs-hosted.com/en/latest/quickstart.html#augment-a-2-channel-audio-sequence)
+- [Augment a batch of multivariate time series](https://tsaug.readthedocs.io/en/stable/quickstart.html#augment-a-batch-of-multivariate-time-series)
+- [Augment a 2-channel audio sequence](https://tsaug.readthedocs.io/en/stable/quickstart.html#augment-a-2-channel-audio-sequence)
 
-Examples of every individual augmenter can be found [here](https://arundo-tsaug.readthedocs-hosted.com/en/latest/notebook/Examples%20of%20augmenters.html)
+Examples of every individual augmenter can be found [here](https://tsaug.readthedocs.io/en/stable/notebook/Examples%20of%20augmenters.html)
 
-For full references of implemented augmentation methods, please refer to [References](https://arundo-tsaug.readthedocs-hosted.com/en/latest/references.html).
+For full references of implemented augmentation methods, please refer to [References](https://tsaug.readthedocs.io/en/stable/references.html).
 
 ## Contributing
 
@@ -49,7 +49,7 @@ discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-Please see [Contributing](https://arundo-tsaug.readthedocs-hosted.com/en/stable/developer.html) for more details.
+Please see [Contributing](https://tsaug.readthedocs.io/en/stable/developer.html) for more details.
 
 
 ## License
