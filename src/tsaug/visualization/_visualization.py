@@ -112,6 +112,7 @@ def plot(
         "#bcbd22",
         "#17becf",
         "#1f77b4",
+        "#e7dd89",
     ]
 
     for i, (Xk, Yk) in enumerate(zip(X, Y)):
